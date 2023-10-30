@@ -1,4 +1,5 @@
-\documentclass{article}[letterpaper]
+\documentclass{article}
+\usepackage[letterpaper]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -6,6 +7,9 @@
 \usepackage{natbib}
 
 \newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\mat}[1]{\boldsymbol{\mathsf{#1}}}
+\renewcommand{\vec}[1]{\boldsymbol{\mathrm{#1}}}
+\newcommand{\R}[1]{\mathbb{R}^{#1}}
 
 \title{Learning Nonlinear Dynamics Using Kalman Smoothing}
 \author{jmsh}
@@ -20,14 +24,44 @@
 \section{Introduction}
 The method of Sparse Identification of Nonlinear Dynamics, or SINDy, seeks to discover a differential equation governing an arbitrary, measured system.  The method takes as input some coordinate measurements over time, such as angles between molecular bonds \red{(Boninsegna article)} or a spatial field, such as wave heights \red{(Rudy article)}, and returns the best ordinary or partial differential equation (ODE or PDE) from a library.  However, the method struggles to accomodate significant measurement noise.  On the other hand, Kalman theory has a half-century history of assimilating noisy data to smooth a trajectory.  Its noise properties have been well studied. The paper integrates mature, well-established Kalman theory with emerging SINDy technology and generalized cross validation parameter selection.  It finds that the combination is competitive with other combinations of data smoothing and system identification, and has an advantage in preservation of problem structure and ease of parameter selection.
 
-In section two, we describe the individual methods of SINDy and Kalman smoothing, providing some literature review.  In section three, we demonstrate the advantages of incorporating Kalman with SINDy in a series of experiments.  We conclude with avenues for future research in section four.
+Section two describes the individual methods of SINDy and Kalman smoothing, providing some literature review.  In section three, experiments demonstrate the advantages of incorporating Kalman with SINDy.  The paper concludes with avenues for future research in section four.
 
-\begin{itemize}
-    \item Background on SINDy (relevant variants: WeakSINDy, Ensemble Kalman Identification)
-    \item TOC paragraph
-\end{itemize}
-*Smoothing and differentiation
+% \begin{itemize}
+%     \item Background on SINDy (relevant variants: WeakSINDy, Ensemble Kalman Identification)
+%     \item TOC paragraph
+% \end{itemize}
+% *Smoothing and differentiation
 \section{Background}
+SINDy \red{(PNAS paper)} is a family of emerging methods for discovering the underlying dynamics of a system governed by unknown or partially-known \red{(SR3 paper)} differential equations.  It can handle ODEs as well as PDEs \red{(Rudy Paper)}, and has been used for protein folding \red{(Boninsegna paper)}, chemical reaction networks \red{(Forgot paper)}, plasma physics \red{(Kaptanoglu papers)}, and more.  Most invocations occur through the pysindy Python package, but innovations such as Langevin Regression \red{(Callaham)} or \red{(Rudy integration paper)} exist as independent code.
+
+Given some variable of interest $\mat X$ and a library of functions $\mat \Theta$ (including spatial derivatives, when relevant) SINDy seeks to find the coefficients $\mat \Xi$ of the differential equation:
+
+\begin{align}
+    \dot X = \Xi\Theta(X)
+\end{align}
+
+To amplify:
+\begin{align*}
+    &\mat X \in \R{n \times m}\text{: system of $n$ coordinates at $m$ timepoints.}\\
+    &\mat \Theta(X) \in \R{p \times m}\text{: library of $p$ functions evaluated at $m$ timepoints}\\
+    &\mat \Xi \in \R{n \times p}\text{: coefficients for $n$ equations of $p$ functions}
+\end{align*}
+The function library written as a time-independent quantity refers to the collection $\mat \Theta = [\theta_1, \dots \theta_p]^T$.
+The method generally proceeds in two steps:
+
+\begin{enumerate}
+    \item Estimate the time derivatives of the system ${\mat{\widehat{\dot X}}} = G(\mat X)$ for some smoothing function $G$
+    \item Choosing a sparse regression method, solve the problem $\underset{\text{sparse } \mat \Xi}{\arg\min} \left\| \mat{\widehat{\dot{X}}} - \mat \Xi \mat \Theta(\mat X) \right\|^2$
+\end{enumerate}
+This paper seeks to make SINDy more amenable to noisy data.  It instead presents the steps
+\begin{enumerate}
+    \item Estimate the state and time derivatives of the system ${\mat{\widehat{\dot X}}}, \mat{\widehat X} = G(\mat X)$ where $G$ uses Kalman smoothing
+    \item Choosing a sparse regression method, solve the problem $\underset{\text{sparse } \mat \Xi}{\arg\min} \left\| \mat{\widehat{\dot{X}}} - \mat \Xi \mat \Theta(\mat {\widehat X}) \right\|^2$
+\end{enumerate}
+
+this paper are instead to fit both the 
+
+
 \begin{itemize}
     \item Kalman smoother description.  Figure: graphics of kalman smoothing
     \item SINDy description.  Figure: Graphics of SINDy
