@@ -1,0 +1,83 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{natbib}
+
+\title{Learning Nonlinear Dynamics Using Kalman Smoothing}
+\author{jmsh}
+\date{October 2023}
+
+\begin{document}
+
+\maketitle
+
+\abstract{Identifying ODEs from measurement data requires both fitting the dynamics and assimilating the measurement data.  The Sparse Identification of Nonlinear Dynamics (SINDy) method thus involves a derivative estimation (and optionally, smoothing) step and a sparse regression on ODE terms.  Kalman smoothing provides a useful framework for assimilating the measurement data whose noise behavior is well understood.  Previously, derivatives in SINDy and its python package, pysindy, had been estimated by finite difference, L1 total variation minimization, or local filters like Savitsky-Golay.  However, Kalman discovers ODEs that best recreate the essential dynamics in simulation, and when combined with hyperparameter optimization, requires the least amount of tuning.  The authors have incorporated Kalman smoothing into the existing pysindy architecture, allowing for rapid adoption of the method.}
+
+\section{Introduction}
+Discovering governing equations from noisy data 
+* It is competitive with existing methods in identifying support
+* Kalman preserved problem structure much better than other methods
+* The paper integrates mature, well-established Kalman theory with emerging SINDy technology and generalized cross validation parameter selection.
+
+Common across science and engineering.  We demonstrate this on a number of toy examples, showing that it does indeed provide this nice performance in model identification.
+\begin{itemize}
+    \item Kalman smoothing is a useful method in engineering whose noise properties are well-understood.  SINDy has been great at identifying ODEs and PDEs, but struggles in the presence of noise.  Combining the two equips researchers with the ability to discover equations from noisy data
+    \item Background on Kalman smoothing
+    \item Background on SINDy (relevant variants: WeakSINDy, Ensemble Kalman Identification)
+    \item TOC paragraph
+\end{itemize}
+*Smoothing and differentiation
+\section{Background}
+\begin{itemize}
+    \item Kalman smoother description.  Figure: graphics of kalman smoothing
+    \item SINDy description.  Figure: Graphics of SINDy
+    \item Existing Kalman System Identification.
+\end{itemize}
+\section{Experiments}
+Methods:
+\begin{itemize}
+    \item table
+    \item Compare with (a) WeakSINDy, (b) TV, SG filter
+    \item metrics: F1, MAE of coefficients (\textcolor{red}{or MSE?})
+    \item Utilize MIOSR optimizer (\textcolor{red}{with Ensembling wrapper?})
+\end{itemize}
+ODE data sets \textcolor{red}{Do I add {\it all} the possible ones I have set up (Rossler, Duffing)?  Do I add the reaction network one?}
+\begin{itemize}
+    \item Hudson Bay Company Lotka-Volterra
+    \item Van der Pol oscillator
+    \item Hopf
+    \item MHD \textcolor{red}{Would need to add}
+\end{itemize}
+PDE Data sets \textcolor{red}{anything real?}
+\begin{itemize}
+    \item Inviscid Burgers
+    \item KdV
+    \item nonlinear Schrodinger
+    \item KS
+    \item Reaction-Diffusion
+\end{itemize}
+
+\subsection{Noise tolerance and data length}
+\textcolor{blue}{Figure: plot of score for each method across range of smoothing parameters.  subplots for each ODE \& metric}.  \textcolor{red}{Parameter-search wrapper-experiment inside P-search comparison experiment}.
+% \subsection{ODEs: Robust Kalman Smoothing (Maybe?)}
+\textcolor{blue}{Figure: plot of score for each method across range of smoothing parameters.  subplots for each ODE \& metric}. 
+Add noisy 
+\subsection{ODEs: Data Length requirements}
+\textcolor{blue}{Figure: plot of score for each method at optimal parameter across range of data length requirements.  subplots for each ODE \& metric}.  \textcolor{red}{Parameter-search wrapper-experiment inside data-length wrapper-experiment inside Data-length comparison comparison experiment}.
+\subsection{PDEs}
+\textcolor{red}{Use Figure 4 from the E-SINDy paper. Need to implement these}
+% \subsection{Model Predictive Control}
+% \textcolor{red}{Lorenz stabilization, learn from E-SINDy paper}
+\section{Conclusion}
+\begin{table}[]
+    \centering
+    \begin{tabular}{c|c}
+         &  \\
+         & 
+    \end{tabular}
+    \caption{Caption}
+    \label{tab:my_label}
+\end{table}
+\end{document}
