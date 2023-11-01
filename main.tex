@@ -27,16 +27,17 @@ The method of Sparse Identification of Nonlinear Dynamics, or SINDy, seeks to di
 Section two describes the individual methods of SINDy and Kalman smoothing, providing some literature review.  In section three, experiments demonstrate the advantages of incorporating Kalman with SINDy.  The paper concludes with avenues for future research in section four.
 
 % \begin{itemize}
-%     \item Background on SINDy (relevant variants: WeakSINDy, Ensemble Kalman Identification)
-%     \item TOC paragraph
-% \end{itemize}
-% *Smoothing and differentiation
+%     \item Background on SINDy (relevant variants: WeakSINDy, Ensemble Kalman % *Smoothing and differentiation
+
 \section{Background}
+
+\subsection{SINDy}
 SINDy \red{(PNAS paper)} is a family of emerging methods for discovering the underlying dynamics of a system governed by unknown or partially-known \red{(SR3 paper)} differential equations.  It can handle ODEs as well as PDEs \red{(Rudy Paper)}, and has been used for protein folding \red{(Boninsegna paper)}, chemical reaction networks \red{(Forgot paper)}, plasma physics \red{(Kaptanoglu papers)}, and more.  Most invocations occur through the pysindy Python package, but innovations such as Langevin Regression \red{(Callaham)} or \red{(Rudy integration paper)} exist as independent code.
 
 Given some variable of interest $\mat X$ and a library of functions $\mat \Theta$ (including spatial derivatives, when relevant) SINDy seeks to find the coefficients $\mat \Xi$ of the differential equation:
 
 \begin{align}
+    \label{eqn:sindy_ode}
     \dot X = \Xi\Theta(X)
 \end{align}
 
@@ -47,26 +48,41 @@ To amplify:
     &\mat \Xi \in \R{n \times p}\text{: coefficients for $n$ equations of $p$ functions}
 \end{align*}
 The function library written as a time-independent quantity refers to the collection $\mat \Theta = [\theta_1, \dots \theta_p]^T$.
-The method generally proceeds in two steps:
+The method generally proceeds in two steps: 
 
 \begin{enumerate}
     \item Estimate the time derivatives of the system ${\mat{\widehat{\dot X}}} = G(\mat X)$ for some smoothing function $G$
     \item Choosing a sparse regression method, solve the problem $\underset{\text{sparse } \mat \Xi}{\arg\min} \left\| \mat{\widehat{\dot{X}}} - \mat \Xi \mat \Theta(\mat X) \right\|^2$
 \end{enumerate}
-This paper seeks to make SINDy more amenable to noisy data.  It instead presents the steps
+This paper seeks to make SINDy more resilient to noise by taking a data assimilation approach.  It instead presents the Kalman SINDy steps
 \begin{enumerate}
     \item Estimate the state and time derivatives of the system ${\mat{\widehat{\dot X}}}, \mat{\widehat X} = G(\mat X)$ where $G$ uses Kalman smoothing
     \item Choosing a sparse regression method, solve the problem $\underset{\text{sparse } \mat \Xi}{\arg\min} \left\| \mat{\widehat{\dot{X}}} - \mat \Xi \mat \Theta(\mat {\widehat X}) \right\|^2$
 \end{enumerate}
 
-this paper are instead to fit both the 
+\subsection{Kalman Smoothing}
 
+Kalman theory is a group of optimal estimation techniques to assimilate measurement noise to a random process.  The theory can be use to filter new measurements in real-time use cases or smooth a complete trajectory of measurements.  It has been used for tracking everything from aircraft trajectories to population dynamics.  While the processes this paper is concerned with are not random, 
+in the first step of SINDy they are unknown, and so probabalistic language is appropriate.
+
+
+In adding Kalman smoothing to SINDy, we introduce a distinction between the measurement variables and the state variables of the dynamical system in equation 
+\ref{eqn:sindy_ode}.  As such, the inputs to the problem become $m$ time points of measurements of $k$ variables ($\mat Z\in \R{k\times m}$) and a linear transform from the state to the measurement variables $\mat H \in \R{k \times n}$ describing how the process is measured.  Two parameters are required $\sigma_z$, the measurement noise standard deviation, and $\sigma_x$, the process velocity standard deviation per unit time.  If only state estimates, and not variances, are required, it suffices to use the ratio $\rho = (\sigma_z / \sigma_x)^2$.
+
+The measurement error is assumed to be normally distributed with $\mat H \mat X - \mat Z \sim \sigma_z \mathcal N(0, \mat R)$.  Each process is assumed to have an independent, Brownian velocity.  This leads to Kalman smoothing solution 
+\begin{align}
+    \underset{X, \dot X}{\arg\min}{\|\mat H \mat X - \mat Z\|_{R^{-1}}}^2 + \rho {\|\mat G [\mat {\dot X}, \mat X]\|_{Q^{-1}}}^2
+\end{align}
+Here, $\mat G$ is a linear transform to separate $[\mat{\dot X}, \mat X]$ into independent, mean-zero increments, and $\mat Q$ is the covariance of those increments.
+
+In practice, rather than choosing $\rho$, this paper uses the generalized cross validation of (\red{Barrett and Boyd paper}) to choose $\rho$.  It chooses $\rho$ in order to minimize the loss on a witheld set of data.  While the algorithm described in that paper is not guaranteed to find a minimum, heuristic experience has shown that at least in this use case, the longer the trajectory, the more likely their algorithm will succeed.
 
 \begin{itemize}
     \item Kalman smoother description.  Figure: graphics of kalman smoothing
     \item SINDy description.  Figure: Graphics of SINDy
-    \item Existing Kalman System Identification.
+    \item Anything on existing Kalman System Identification?
 \end{itemize}
+
 \section{Experiments}
 Methods:
 \begin{itemize}
@@ -103,13 +119,14 @@ Add noisy
 % \subsection{Model Predictive Control}
 % \textcolor{red}{Lorenz stabilization, learn from E-SINDy paper}
 \section{Conclusion}
-\begin{table}
-    \centering
-    \begin{tabular}{c|c}
-         &  \\
-         & 
-    \end{tabular}
-    \caption{Caption}
-    \label{tab:my_label}
-\end{table}
+This paper has demonstrated that Kalman smoothing is a 
+% \begin{table}
+%     \centering
+%     \begin{tabular}{c|c}
+%          &  \\
+%          & 
+%     \end{tabular}
+%     \caption{Caption}
+%     \label{tab:my_label}
+% \end{table}
 \end{document}
