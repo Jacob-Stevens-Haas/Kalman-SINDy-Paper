@@ -162,7 +162,17 @@ As the coefficient metrics are the most straightforwards, and we compare methods
 % % \subsection{Model Predictive Control}
 % % \textcolor{red}{Lorenz stabilization, learn from E-SINDy paper}
 \section{Conclusion}
-This paper has demonstrated that Kalman smoothing is a useful innovation, but  
+This paper has demonstrated that Kalman smoothing is a useful addition to SINDy.  By incorporating hyperparameter optimization, it makes the method more generally applicable across domains. The Kalman smoother behaves optimally for the simplest systems and provides a familiar process to the controls engineering community, even if it is not a mathematically unique innovation.  It also appears to perform better at preserving global system structure in simulation.
+
+<More specific experimental results summary>
+
+Since Kalman smoothing and SINDy regression loss terms accomodate variable timesteps, a natural innovation is to combinine the two into a single optimization problem.  This could allow interaction and a more clear tradeoff between fitting the data through either the smoothed process or the coefficient sparsity.
+
+Currently, the hyperparameter optimization has no access to the terms in the SINDy expression and therefore no intrinsic understanding of the process variance even when measurement noise is known.  With access however to the library terms, hyperparameters for process and measurement variance could be more quickly selected, rather than the long prox-gradient method of \red{Boyd/Barratt}.
+
+Kalman SINDy could also be more directly compared to Weak SINDy, which aims at the same goal of reducing the sensitivity to noise.
+
+Oh wait, did I forget to mention that KS has a natural connection between 
 % \begin{table}
 %     \centering
 %     \begin{tabular}{c|c}
