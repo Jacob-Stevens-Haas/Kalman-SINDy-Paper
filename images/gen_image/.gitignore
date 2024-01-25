@@ -1,0 +1,26 @@
+build
+dist
+*.egg-info
+commit-msg
+todo
+poetry.lock
+
+# profiling
+prof/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+env8
+
+pysindy/version.py
+**/*cache*
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+.DS_Store
+.vscode
