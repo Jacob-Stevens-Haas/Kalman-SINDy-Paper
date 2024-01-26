@@ -11,7 +11,7 @@
 \newcommand{\mat}[1]{\boldsymbol{\mathsf{#1}}}
 \renewcommand{\vec}[1]{\boldsymbol{\mathrm{#1}}}
 \newcommand{\R}[1]{\mathbb{R}^{#1}}
-
+\bibliographystyle{unsrtnat}
 \title{Learning Nonlinear Dynamics Using Kalman Smoothing}
 \author{jmsh}
 \date{October 2023}
@@ -39,9 +39,19 @@ The method of Sparse Identification of Nonlinear Dynamics, or SINDy, seeks to di
 %     \item What we do: marriage of kalman + SINDy (figure, hinted at in P1)
 % \end{itemize}
 
-When developing model discovery methods for physical systems, explainability takes on greater importance. A method that can identify relationships between coordinates and derivatives supports all the theorems of physics, such as spectral analysis, local and global stability, and variable time-stepping.  While other time-series data science techniques have emerged such as dynamic mode decomposition, recurrent neural nets, and autoencoders, such methods do not seek to search a differentiable function space.  Applying any physical constraints to them, such as PINN \red{cite this} requires wholly new derivations.  Few tools exist to analyze the discovered models' global or local properties other than exhaustive simulation.
+When developing model discovery methods for physical systems, explainability takes on greater importance.
+A method that can identify relationships between coordinates and derivatives supports all the theorems of physics, such as spectral analysis, local and global stability, and variable time-stepping.
+While other time-series data science techniques have emerged such as dynamic mode decomposition, recurrent neural nets, and autoencoders, such methods do not seek to search a differentiable function space.
+Applying any physical constraints to them, such as PINN \red{cite this} requires wholly new derivations.
+Few tools exist to analyze the discovered models' global or local properties other than exhaustive simulation.
 
-SINDy does seek to establish relationships between derivatives. Emerging from \red{cite original paper}, all variants aim to discover a sparse symbolic representation of an autonomous or controlled system, $\dot x = f(x)$.  This form has allowed innovations in regression that follow common physics techniques, such as bounding a Lyapunov function in \red{cite Trapping}, enforcing linear stability in \red{cite StableLinearSR3}, and weak formulation in \red{cite WeakSINDy}.  Explicitly stochastic extensions also provide symbolic representation of variance in \red{cite Boninsegna} and attempt to handle PDE discretization in \red{cite Langevin Regression}.  This paper could be considered a simpler approach in a similar vein to these latter methods.
+SINDy does seek to establish relationships between derivatives.
+Emerging from \red{cite original paper}, all variants aim to discover a sparse symbolic representation of an autonomous or controlled system, $\dot x = f(x)$.
+This form has allowed innovations in regression that follow common physics techniques, such as bounding a Lyapunov function in \red{cite Trapping}, enforcing linear stability in \red{cite StableLinearSR3}, and weak formulation in \red{cite WeakSINDy}.
+Explicitly stochastic extensions also provide symbolic representation of variance in \red{cite Boninsegna} and attempt to handle PDE discretization in \red{cite Langevin Regression}.
+This paper could be considered a simpler approach in a similar vein to these latter methods.
+
+Example citation: \cite{Raissi2019}
 
 Kalman smoothing, which this paper adds to SINDy, has a long history of assimilating measurement data in time series.
 From its debut in \red{cite Kalman-original}, engineering practice and design have used it for control and prediction across the real world, e.g. in radar systems, econometric variables, weather prediction, and more.
@@ -193,13 +203,6 @@ Currently, the hyperparameter optimization has no access to the terms in the SIN
 Kalman SINDy could also be more directly compared to Weak SINDy, which aims at the same goal of reducing the sensitivity to noise.
 
 Oh wait, did I forget to mention that KS has a natural connection between 
-% \begin{table}
-%     \centering
-%     \begin{tabular}{c|c}
-%          &  \\
-%          & 
-%     \end{tabular}
-%     \caption{Caption}
-%     \label{tab:my_label}
-% \end{table}
+
+\bibliography{main}
 \end{document}
