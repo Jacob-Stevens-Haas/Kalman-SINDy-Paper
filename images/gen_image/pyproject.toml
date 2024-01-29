@@ -12,5 +12,6 @@ requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
     "matplotlib",
+    "kalman @ git+https://github.com/Jacob-Stevens-haas/kalman",
     "pysindy-experiments @ git+https://github.com/Jacob-Stevens-Haas/gen-experiments.git"
 ]
