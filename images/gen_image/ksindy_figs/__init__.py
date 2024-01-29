@@ -10,6 +10,7 @@ import kalman  # type: ignore
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+import pysindy as ps
 from numpy.typing import NBitBase
 from scipy import sparse  # type: ignore
 from sklearn.linear_model import Lasso
@@ -19,7 +20,8 @@ NTimesteps = NewType("NTimesteps", int)
 NSeries = NewType("NSeries", int)
 Float1D = np.ndarray[NTimesteps, NpFlt]
 Float2D = np.ndarray[tuple[NSeries, NTimesteps], NpFlt]
-FloatOrArray = TypeVar("FloatOrArray", float, NpFlt)
+FloatND = np.ndarray[Any, NpFlt]
+FloatOrArray = TypeVar("FloatOrArray", float, FloatND)
 
 CMAP = mpl.color_sequences['tab10']
 CTRUE = CMAP[0]
@@ -29,33 +31,40 @@ CEST = CMAP[2]
 np.random.seed(1)
 NOISE_VAR = .2
 
-def f_dot(t: FloatOrArray) -> FloatOrArray:
-    return .3 * t **2 - 2 * t  # type: ignore 
+# def f_dot(x: FloatOrArray) -> FloatOrArray:
+#     return x ** 2 - 2 * x  # type: ignore 
+
+# def f(t: FloatOrArray) -> FloatOrArray:
+#     return 2 / (1 + np.e ** (2 * t)) # type: ignore
+
+def f_dot(x: FloatOrArray) -> FloatOrArray:
+    return -4 -  3 * x  # type: ignore 
 
 def f(t: FloatOrArray) -> FloatOrArray:
-    return 20 / (3 + 2 * np.e ** (2 * t)) # type: ignore
+    return 3* np.e ** (-3 * t) - 4 /3# type: ignore
 
-def generate_mock_data(dt: float, noise_var: float) -> tuple[float, Float1D, Float1D, Float1D, Float1D]:
+def generate_sin_data(dt: float, noise_var: float) -> tuple[float, Float1D, Float1D, Float1D, Float1D]:
     t = np.arange(0, 6, dt)
     nt = len(t)
-    x = np.sin(t)
-    x_dot = np.cos(t)
+    x = np.stack([np.sin(t), np.cos(t)], axis=0)
+    x_dot = np.stack([np.cos(t), -np.sin(t)])
     z = x + np.random.normal(size=x.shape, scale=np.sqrt(noise_var))
     return nt, t, x, x_dot, z
-def alt_mock_data(dt: float, noise_var: float) -> tuple[float, Float1D, Float1D, Float1D, Float1D]:
-    t = np.arange(0, 6, dt, dtype=float)
+def gen_exp_data(dt: float, noise_var: float) -> tuple[float, Float1D, Float1D, Float1D, Float1D]:
+    t = np.arange(0, 1, dt, dtype=float)
     nt = len(t)
     x = f(t)
-    x_dot = f_dot(t)
+    x_dot = f_dot(x)
     z = x + np.random.normal(size=x.shape, scale=np.sqrt(noise_var))
     return nt, t, x, x_dot, z
 
 # %%
 # nt, t, x, x_dot, z = generate_mock_data(.3, NOISE_VAR)
-nt, t, x, x_dot, z = alt_mock_data(.3, NOISE_VAR)
+nt, t, x, x_dot, z = gen_exp_data(.05, NOISE_VAR)
 # %%
 zoom_start = len(t) //3
-zoom_inds = slice(zoom_start, zoom_start+10)
+zoom_end = zoom_start + 8
+zoom_inds = slice(zoom_start, zoom_end, 1)
 plt.plot(t[zoom_inds], z[zoom_inds], ".")
 
 # %%
@@ -63,8 +72,6 @@ H = sparse.lil_matrix((nt, 2 * nt))
 H[:, 1::2] = sparse.eye(nt)
 
 x_hat, x_dot_hat, G, Qinv, loss = kalman.solve(z, H, t, NOISE_VAR, 1e-1)
-
-# %%
 
 
 # %%
@@ -175,5 +182,11 @@ if __name__ == "__main__":
         **q_props
     )
 
-    model = Lasso(1e-1, fit_intercept=False).fit(funcs_theta.T, x_dot_hat)
-    model.coef_
+
+# %%
+if __name__ == "__main__":
+    
+    model = ps.STLSQ(unbias=True).fit(funcs_theta.T, x_dot_hat)
+    print(model.coef_)
+
+# %%
