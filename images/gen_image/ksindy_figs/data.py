@@ -7,6 +7,7 @@ from ._typing import Float1D
 from ._typing import Float2D
 
 
+rng = np.random.default_rng(1)
 # def f_dot(x: FloatOrArray) -> FloatOrArray:
 #     return x ** 2 - 2 * x  # type: ignore
 
@@ -29,7 +30,7 @@ def gen_sin_data(
     nt = len(t)
     x = np.stack([np.sin(t), np.cos(t)], axis=0)
     x_dot = np.stack([np.cos(t), -np.sin(t)])
-    z = x + np.random.normal(size=x.shape, scale=np.sqrt(noise_var))
+    z = x + rng.normal(size=x.shape, scale=np.sqrt(noise_var))
     return nt, t, x, x_dot, z
 
 
@@ -40,5 +41,5 @@ def gen_exp_data(
     nt = len(t)
     x = f(t)
     x_dot = f_dot(x)
-    z = x + np.random.normal(size=x.shape, scale=np.sqrt(noise_var))
+    z = x + rng.normal(size=x.shape, scale=np.sqrt(noise_var))
     return nt, t, x, x_dot, z
