@@ -42,4 +42,3 @@ def gen_exp_data(
     x_dot = f_dot(x)
     z = x + np.random.normal(size=x.shape, scale=np.sqrt(noise_var))
     return nt, t, x, x_dot, z
-

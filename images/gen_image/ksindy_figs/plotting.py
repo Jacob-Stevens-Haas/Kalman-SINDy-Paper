@@ -6,7 +6,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
-from ._typing  import Float1D
+from ._typing import Float1D
 from ._typing import Float2D
 
 CMAP = mpl.color_sequences["tab10"]
@@ -29,6 +29,7 @@ class PlotData:
     x_hat: Float1D
     x_dot_hat: Float1D
     theta: Float2D
+    coef: Float1D
 
 
 def data_plot(
@@ -93,6 +94,18 @@ def shared_ylim(*args: Float1D) -> tuple[float, float]:
     return data_lim[0] - margin, data_lim[1] + margin
 
 
+def soln_plot(
+    t: Float1D,
+    dt: Float1D,
+    x_hat: Float1D,
+    x_dot_hat: Float1D,
+    theta: Float2D,
+    coef: Float1D,
+    ylims: tuple[float, float] | None = None,
+    **q_props: Any,
+) -> None: ...
+
+
 def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
     ylims = shared_ylim(pdat.x, pdat.z, pdat.x_hat)
     data_plot(pdat.t, pdat.x, pdat.z, ylims=ylims)
@@ -108,4 +121,14 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
     )
     lib_plot(
         pdat.t, pdat.dt, pdat.x_hat, pdat.x_dot_hat, pdat.theta, ylims=ylims, **q_props
+    )
+    soln_plot(
+        pdat.t,
+        pdat.dt,
+        pdat.x_hat,
+        pdat.x_dot_hat,
+        pdat.theta,
+        pdat.coef,
+        ylims=ylims,
+        **q_props,
     )

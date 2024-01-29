@@ -13,4 +13,3 @@ Float1D = np.ndarray[NTimesteps, NpFlt]
 Float2D = np.ndarray[tuple[NSeries, NTimesteps], NpFlt]
 FloatND = np.ndarray[Any, NpFlt]
 FloatOrArray = TypeVar("FloatOrArray", float, FloatND)
-
