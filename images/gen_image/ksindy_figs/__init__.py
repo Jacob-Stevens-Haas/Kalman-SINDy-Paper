@@ -47,6 +47,9 @@ def run_example(m_conf: MathConfig, p_conf: PlotConfig) -> None:
         x_dot_hat[0, zoom],
         funcs_theta[:, zoom],
     )
+
+    if len(pdat.dt) != len(pdat.t): raise ValueError("Slice is too small")
+
     make_all_plots(pdat, q_props)
     model = ps.STLSQ(unbias=True).fit(funcs_theta.T, x_dot_hat.T)
     print(model.coef_)
@@ -87,13 +90,13 @@ def fd_vec(
 
 # %%
 if __name__ == "__main__":
-    m_conf = MathConfig({"ode_type": "sin", "dt": 1, "t_end": 2, "noise_var": .2})
+    m_conf = MathConfig({"ode_type": "sin", "dt": .1, "t_end": 6, "noise_var": .1})
     zoom_start = 0
     # zoom_end = m_conf["t_end"] // m_conf["dt"]
-    zoom_end = zoom_start + 8
-    zoom_inds = slice(zoom_start, zoom_end, 1)
+    zoom_end = zoom_start + 50
+    zoom_step = 6
+    zoom_inds = slice(zoom_start, zoom_end, zoom_step)
     q_props = {"headwidth": 1.5, "headlength": 2, "angles": "xy"}
     p_conf = PlotConfig({"zoom_inds": zoom_inds, "q_props": q_props})
     run_example(m_conf, p_conf)
 
-# %%
