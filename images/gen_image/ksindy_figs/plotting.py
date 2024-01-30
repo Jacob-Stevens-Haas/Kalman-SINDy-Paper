@@ -1,13 +1,12 @@
 from dataclasses import dataclass
-from typing import Any
-from typing import cast
+from typing import Any, cast
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.axes._axes import Axes
 
-from ._typing import Float1D
-from ._typing import Float2D
+from ._typing import Float1D, Float2D
 
 CMAP = mpl.color_sequences["tab10"]
 CTRUE = CMAP[0]
@@ -45,6 +44,7 @@ def data_plot(
 
 
 def smoothing_plot(
+    ax: Axes,
     t: Float1D,
     x: Float1D,
     z: Float1D,
@@ -57,7 +57,6 @@ def smoothing_plot(
     ylims: tuple[float, float] | None = None,
     **q_props: Any,
 ) -> None:
-    ax = plt.figure().add_axes((0, 0, 1, 1))
     ax.set_title("Kalman smoothing applied to measurements")
     ax.plot(t, x, color=CTRUE, label="true")
     ax.plot(t, z, ".", color=CMEAS, label="measured")
@@ -70,6 +69,7 @@ def smoothing_plot(
 
 
 def lib_plot(
+    ax: Axes,
     t: Float1D,
     dt: Float1D,
     x_hat: Float1D,
@@ -81,7 +81,6 @@ def lib_plot(
     **q_props: Any,
 ) -> None:
     """Create plot of function library vectors and smoothed derivative vectors."""
-    ax = plt.figure().add_axes((0, 0, 1, 1))
     ax.plot(t, x_hat, ".", color=CEST, label="Kalman")
     ax.quiver(t, x_hat, dt * amp, x_dot_hat * dt * amp, color=CEST, **q_props)
     for i, func in enumerate(funcs_theta):
@@ -107,6 +106,7 @@ def shared_ylim(*args: Float1D) -> tuple[float, float]:
 
 
 def soln_plot(
+    ax: Axes,
     t: Float1D,
     dt: Float1D,
     x_hat: Float1D,
@@ -118,7 +118,6 @@ def soln_plot(
     ylims: tuple[float, float] | None = None,
     **q_props: Any,
 ) -> None:
-    ax = plt.figure().add_axes((0, 0, 1, 1))
     ax.plot(t, x_hat, ".", color=CEST, label="Kalman")
     ax.quiver(t, x_hat, dt * amp, x_dot_hat * dt * amp, color=CEST, **q_props)
     old_height = x_hat
@@ -148,7 +147,11 @@ def soln_plot(
 def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
     ylims = shared_ylim(pdat.x, pdat.z, pdat.x_hat)
     # data_plot(pdat.t, pdat.x, pdat.z, ylims=ylims)
+    fig = plt.figure(figsize=(5, 8))
+    fig.suptitle("SINDy process")
+    axes = cast(list[Axes], fig.subplots(3, 1))
     smoothing_plot(
+        axes[0],
         pdat.t,
         pdat.x,
         pdat.z,
@@ -160,7 +163,9 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         ylims=ylims,
         **q_props,
     )
+    axes[0].set_xlabel("(a)")
     lib_plot(
+        axes[1],
         pdat.t,
         pdat.dt,
         pdat.x_hat,
@@ -170,7 +175,9 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         ylims=ylims,
         **q_props,
     )
+    axes[1].set_xlabel("(b)")
     soln_plot(
+        axes[2],
         pdat.t,
         pdat.dt,
         pdat.x_hat,
@@ -181,3 +188,4 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         amp=pdat.amp,
         **q_props,
     )
+    axes[2].set_xlabel("(c)")
