@@ -105,7 +105,8 @@ def lib_plot(
         )
     if ylims is not None:
         ax.set_ylim(*ylims)
-    ax.legend()
+    if color is None:
+        ax.legend()
     ax.set_xticks(())
 
 
@@ -161,7 +162,7 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
     ylims = shared_ylim(pdat.x, pdat.z, pdat.x_hat)
     # data_plot(pdat.t, pdat.x, pdat.z, ylims=ylims)
     fig = plt.figure(figsize=(5, 8))
-    fig.suptitle("SINDy process")
+    fig.suptitle("SINDy Steps")
     axes = cast(list[Axes], fig.subplots(3, 1))
     smoothing_plot(
         axes[0],
@@ -176,7 +177,7 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         ylims=ylims,
         **q_props,
     )
-    axes[0].set_xlabel("(a)")
+    axes[0].set_xlabel("(a) Measurements smoothed to recover estimated trajectory")
     lib_plot(
         axes[1],
         pdat.t,
@@ -188,7 +189,7 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         ylims=ylims,
         **q_props,
     )
-    axes[1].set_xlabel("(b)")
+    axes[1].set_xlabel("(b) Function library evaluated along estimated trajectory")
     soln_plot(
         axes[2],
         pdat.t,
@@ -201,5 +202,5 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         amp=pdat.amp,
         **q_props,
     )
-    axes[2].set_xlabel("(c)")
+    axes[2].set_xlabel("(c) Candidate functions regressed against estimated derivative")
     fig.tight_layout()
