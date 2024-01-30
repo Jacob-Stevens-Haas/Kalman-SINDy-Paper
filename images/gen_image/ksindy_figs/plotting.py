@@ -13,6 +13,8 @@ CTRUE = CMAP[0]
 CMEAS = CMAP[1]
 CEST = CMAP[2]
 
+plt.rcParams["text.usetex"] = True
+
 
 @dataclass
 class PlotData:
@@ -62,7 +64,7 @@ def smoothing_plot(
     ax.plot(t, x_hat, "--", color=CEST, label=r"$\hat x$")
     # ax.quiver(t, z, dt, dz, color=CMEAS, **q_props)
     xyuv = (t, x_hat, dt * amp, dt * x_dot_hat * amp)
-    ax.quiver(*xyuv, label=r"$\hat\dot x$", color=CEST, **q_props)
+    ax.quiver(*xyuv, label=r"$\hat{\dot x}$", color=CEST, **q_props)
     ax.legend()
     ax.set_xticks(())
     if ylims is not None:
@@ -92,7 +94,7 @@ def lib_plot(
             dt * amp,
             func * dt * amp,
             color=CMAP[i + 3],
-            label=rf"$θ_{i}(\hat x)$",
+            label=rf"$\theta_{i}(\hat x)$",
             **q_props,
         )
     if ylims is not None:
@@ -137,7 +139,7 @@ def soln_plot(
             du,
             dv,
             color=CMAP[i + 3],
-            label=rf"$ξ_{i}θ_{i}(\hat x)$",
+            label=rf"$\xi_{i}\theta_{i}(\hat x)$",
             **q_props,
         )
         old_height = old_height + dv
