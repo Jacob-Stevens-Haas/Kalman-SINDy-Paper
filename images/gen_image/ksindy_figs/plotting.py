@@ -12,7 +12,7 @@ CMAP = mpl.color_sequences["tab10"]
 CTRUE = CMAP[0]
 CMEAS = CMAP[1]
 CEST = CMAP[2]
-
+CGRAY = (0.85, 0.85, 0.85)
 plt.rcParams["text.usetex"] = True
 
 
@@ -84,18 +84,24 @@ def lib_plot(
     **q_props: Any,
 ) -> None:
     """Create plot of function library vectors and smoothed derivative vectors."""
-    ax.plot(t, x_hat, ".", color=CEST)
+    color = q_props.get("color")
+    if color is None:
+        ax.plot(t, x_hat, "--", color=CGRAY)
+        curr_props = q_props | {"color": CEST}
+    else:  # i.e. if we're the history plot, don't plot our history
+        curr_props = q_props | {"color": color}
     xyuv = (t, x_hat, dt * amp, x_dot_hat * dt * amp)
-    ax.quiver(*xyuv, color=CEST, **q_props)
+    ax.quiver(*xyuv, **curr_props)
     for i, func in enumerate(funcs_theta):
+        if color is None:
+            curr_props = q_props | {"color": CMAP[i + 3]}
         ax.quiver(
             t,
             x_hat,
             dt * amp,
             func * dt * amp,
-            color=CMAP[i + 3],
-            label=rf"$\theta_{i}(\hat x)$",
-            **q_props,
+            label=rf"$\theta_{i}(\hat x)$" if not color else None,
+            **curr_props,
         )
     if ylims is not None:
         ax.set_ylim(*ylims)
@@ -123,7 +129,8 @@ def soln_plot(
     ylims: tuple[float, float] | None = None,
     **q_props: Any,
 ) -> None:
-    ax.plot(t, x_hat, ".", color=CEST)
+    lib_plot(ax, t, dt, x_hat, x_dot_hat, theta, amp=amp, color=CGRAY, **q_props)
+    # ax.plot(t, x_hat, ".", color=CEST)
     ax.quiver(t, x_hat, dt * amp, x_dot_hat * dt * amp, color=CEST, **q_props)
     old_height = x_hat
     old_left = t
