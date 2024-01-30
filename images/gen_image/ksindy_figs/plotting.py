@@ -57,13 +57,14 @@ def smoothing_plot(
     ylims: tuple[float, float] | None = None,
     **q_props: Any,
 ) -> None:
-    ax.set_title("Kalman smoothing applied to measurements")
-    ax.plot(t, x, color=CTRUE, label="true")
-    ax.plot(t, z, ".", color=CMEAS, label="measured")
-    ax.plot(t, x_hat, "--", color=CEST, label="kalman")
+    ax.plot(t, x, color=CTRUE, label=r"$x$")
+    ax.plot(t, z, ".", color=CMEAS, label=r"$z$")
+    ax.plot(t, x_hat, "--", color=CEST, label=r"$\hat x$")
     # ax.quiver(t, z, dt, dz, color=CMEAS, **q_props)
-    ax.quiver(t, x_hat, dt * amp, dt * x_dot_hat * amp, color=CEST, **q_props)
+    xyuv = (t, x_hat, dt * amp, dt * x_dot_hat * amp)
+    ax.quiver(*xyuv, label=r"$\hat\dot x$", color=CEST, **q_props)
     ax.legend()
+    ax.set_xticks(())
     if ylims is not None:
         ax.set_ylim(*ylims)
 
@@ -81,8 +82,9 @@ def lib_plot(
     **q_props: Any,
 ) -> None:
     """Create plot of function library vectors and smoothed derivative vectors."""
-    ax.plot(t, x_hat, ".", color=CEST, label="Kalman")
-    ax.quiver(t, x_hat, dt * amp, x_dot_hat * dt * amp, color=CEST, **q_props)
+    ax.plot(t, x_hat, ".", color=CEST)
+    xyuv = (t, x_hat, dt * amp, x_dot_hat * dt * amp)
+    ax.quiver(*xyuv, color=CEST, **q_props)
     for i, func in enumerate(funcs_theta):
         ax.quiver(
             t,
@@ -90,12 +92,13 @@ def lib_plot(
             dt * amp,
             func * dt * amp,
             color=CMAP[i + 3],
-            label=f"$θ_{i}$",
+            label=rf"$θ_{i}(\hat x)$",
             **q_props,
         )
     if ylims is not None:
         ax.set_ylim(*ylims)
     ax.legend()
+    ax.set_xticks(())
 
 
 def shared_ylim(*args: Float1D) -> tuple[float, float]:
@@ -118,7 +121,7 @@ def soln_plot(
     ylims: tuple[float, float] | None = None,
     **q_props: Any,
 ) -> None:
-    ax.plot(t, x_hat, ".", color=CEST, label="Kalman")
+    ax.plot(t, x_hat, ".", color=CEST)
     ax.quiver(t, x_hat, dt * amp, x_dot_hat * dt * amp, color=CEST, **q_props)
     old_height = x_hat
     old_left = t
@@ -134,7 +137,7 @@ def soln_plot(
             du,
             dv,
             color=CMAP[i + 3],
-            label=f"$ξ_{i}θ_{i}$",
+            label=rf"$ξ_{i}θ_{i}(\hat x)$",
             **q_props,
         )
         old_height = old_height + dv
@@ -142,6 +145,7 @@ def soln_plot(
     if ylims is not None:
         ax.set_ylim(*ylims)
     ax.legend()
+    ax.set_xticks(())
 
 
 def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
@@ -189,3 +193,4 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         **q_props,
     )
     axes[2].set_xlabel("(c)")
+    fig.tight_layout()
