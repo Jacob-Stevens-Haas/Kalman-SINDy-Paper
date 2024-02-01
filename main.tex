@@ -74,6 +74,11 @@ Section two describes the individual methods of SINDy and Kalman smoothing, prov
 \subsection{SINDy}
 SINDy \red{(PNAS paper)} is a family of emerging methods for discovering the underlying dynamics of a system governed by unknown or partially-known \red{(SR3 paper)} differential equations.  It can handle PDEs as well as PDEs \red{(Rudy Paper)}, and has been used for protein folding \red{(Boninsegna paper)}, chemical reaction networks \red{(Hoffman)}, plasma physics \red{(Guan2021)}, and more.  Most invocations occur through the pysindy Python package, but innovations such as Langevin Regression \red{(Callaham)} or \red{(Rudy2019)} exist as independent code.
 
+\begin{figure}
+    \includegraphics{images/explain_sindy}
+\end{figure}
+
+
 Given some variable of interest $\mat X$ and a library of functions $\mat \Theta$ (including spatial derivatives, when relevant) SINDy seeks to find the coefficients $\mat \Xi$ of the differential equation:
 
 \begin{align}
