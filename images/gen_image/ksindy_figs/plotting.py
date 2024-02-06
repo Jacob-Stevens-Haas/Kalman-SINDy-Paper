@@ -178,9 +178,9 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         **q_props,
     )
     ax0_text = "Measurements smoothed to \nrecover estimated trajectory"
-    text_props = {"fontsize": "large", "bbox": {"fill": False}}
+    tx_props = {"fontsize": "large", "bbox": {"fill": False}}
     text_posit = (0.05, 0.2)
-    axes[0].text(*text_posit, ax0_text, transform=axes[0].transAxes, **text_props)
+    axes[0].text(*text_posit, ax0_text, transform=axes[0].transAxes, **tx_props)
     lib_plot(
         axes[1],
         pdat.t,
@@ -193,7 +193,7 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         **q_props,
     )
     ax1_text = "Function library evaluated \nalong estimated trajectory"
-    axes[1].text(*text_posit, ax1_text, transform=axes[1].transAxes, **text_props)
+    axes[1].text(*text_posit, ax1_text, transform=axes[1].transAxes, **tx_props)
     soln_plot(
         axes[2],
         pdat.t,
@@ -207,5 +207,18 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         **q_props,
     )
     ax2_text = "Candidate functions regressed \nagainst estimated derivative"
-    axes[2].text(*text_posit, ax2_text, transform=axes[2].transAxes, **text_props)
-    fig.tight_layout()
+    axes[2].text(*text_posit, ax2_text, transform=axes[2].transAxes, **tx_props)
+    # Make arrows from one axis overlap next
+    axes[1].set_zorder(-1)
+    axes[2].set_zorder(-2)
+    arrow_shape = (0.15, 0.13, 0, -0.2)
+    arrow_props = {
+        "clip_on": False,
+        "width": 0.05,
+        "head_width": 0.1,
+        "head_length": 0.1,
+        "zorder": 100,
+    }
+    axes[0].arrow(*arrow_shape, transform=axes[0].transAxes, **arrow_props)
+    axes[1].arrow(*arrow_shape, transform=axes[1].transAxes, **arrow_props)
+    fig.subplots_adjust(hspace=0.1, top=0.95)
