@@ -177,7 +177,10 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         ylims=ylims,
         **q_props,
     )
-    axes[0].set_xlabel("(a) Measurements smoothed to recover estimated trajectory")
+    ax0_text = "Measurements smoothed to \nrecover estimated trajectory"
+    text_props = {"fontsize": "large", "bbox": {"fill": False}}
+    text_posit = (0.05, 0.2)
+    axes[0].text(*text_posit, ax0_text, transform=axes[0].transAxes, **text_props)
     lib_plot(
         axes[1],
         pdat.t,
@@ -189,7 +192,8 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         ylims=ylims,
         **q_props,
     )
-    axes[1].set_xlabel("(b) Function library evaluated along estimated trajectory")
+    ax1_text = "Function library evaluated \nalong estimated trajectory"
+    axes[1].text(*text_posit, ax1_text, transform=axes[1].transAxes, **text_props)
     soln_plot(
         axes[2],
         pdat.t,
@@ -202,5 +206,6 @@ def make_all_plots(pdat: PlotData, q_props: dict[str, Any]) -> None:
         amp=pdat.amp,
         **q_props,
     )
-    axes[2].set_xlabel("(c) Candidate functions regressed against estimated derivative")
+    ax2_text = "Candidate functions regressed \nagainst estimated derivative"
+    axes[2].text(*text_posit, ax2_text, transform=axes[2].transAxes, **text_props)
     fig.tight_layout()
