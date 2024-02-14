@@ -1,11 +1,10 @@
-from typing import Callable
+from pathlib import Path
 
 import numpy as np
 
-from ._typing import FloatOrArray
-from ._typing import Float1D
-from ._typing import Float2D
+from ._typing import Float1D, Float2D, FloatOrArray
 
+TRIAL_DATA = Path(__file__).resolve().parent.parent / "trials"
 
 rng = np.random.default_rng(1)
 # def f_dot(x: FloatOrArray) -> FloatOrArray:

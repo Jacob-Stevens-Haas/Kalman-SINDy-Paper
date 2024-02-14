@@ -15,3 +15,6 @@ dependencies = [
     "kalman @ git+https://github.com/Jacob-Stevens-haas/kalman",
     "pysindy-experiments @ git+https://github.com/Jacob-Stevens-Haas/gen-experiments.git"
 ]
+
+[tool.isort]
+profile = "black"

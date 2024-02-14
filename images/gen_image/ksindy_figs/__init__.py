@@ -1,17 +1,13 @@
-from typing import Any
-from typing import cast
-from typing import TypedDict
+from typing import Any, TypedDict, cast
 
 import kalman  # type: ignore
 import numpy as np
 import pysindy as ps
 from scipy import sparse  # type: ignore
-from sklearn.linear_model import Lasso
 
-from ksindy_figs.data import gen_sin_data, gen_exp_data
-from ksindy_figs.plotting import PlotData, make_all_plots
-from ksindy_figs._typing import Float1D
-from ksindy_figs._typing import Float2D
+from ksindy_figs._typing import Float1D, Float2D
+from ksindy_figs.data import gen_exp_data, gen_sin_data
+from ksindy_figs.plotting import PlotData, make_composite_fig1
 
 
 class MathConfig(TypedDict):
@@ -57,7 +53,7 @@ def run_example(m_conf: MathConfig, p_conf: PlotConfig) -> None:
     if len(pdat.dt) != len(pdat.t):
         raise ValueError("Slice is too small")
 
-    make_all_plots(pdat, q_props)
+    make_composite_fig1(pdat, q_props)
 
 
 def gen_and_solve(
