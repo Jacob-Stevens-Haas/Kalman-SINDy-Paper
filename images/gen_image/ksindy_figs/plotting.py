@@ -233,7 +233,9 @@ def make_composite_fig1(pdat: PlotData, q_props: dict[str, Any]) -> None:
 
 
 def _setup_summary_fig(
-    n_sub: int, *, fig_cell: Optional[tuple[plt.Figure, SubplotSpec]] = None
+    cells_or_shape: int | tuple[int, int],
+    *,
+    fig_cell: Optional[tuple[plt.Figure, SubplotSpec]] = None,
 ) -> tuple[plt.Figure, GridSpec | GridSpecFromSubplotSpec]:
     """Create neatly laid-out arrangements for subplots
 
@@ -241,15 +243,20 @@ def _setup_summary_fig(
     figure, if required.
 
     Args:
-        n_sub: number of grid elements to create
+        cells_or_shape: number of grid elements to create, or a tuple of
+            rows/cols
         nest_parent: parent grid cell within which to to build a nested
             gridspec
     Returns:
         a figure and gridspec if nest_parent is not provided, otherwise,
         None and a sub-gridspec
     """
-    n_rows = max(n_sub // 3, (n_sub + 2) // 3)
-    n_cols = min(n_sub, 3)
+    if isinstance(cells_or_shape, int):
+        n_sub = cells_or_shape
+        n_rows = max(n_sub // 3, (n_sub + 2) // 3)
+        n_cols = min(n_sub, 3)
+    else:
+        n_rows, n_cols = cells_or_shape
     figsize = [3 * n_cols, 3 * n_rows]
     if fig_cell is None:
         fig = plt.figure(figsize=figsize)
@@ -265,6 +272,7 @@ def plot_experiment_across_gridpoints(
     style: str,
     fig_cell: tuple[Figure, SubplotSpec] = None,
     annotations: bool = True,
+    shape: Optional[tuple[int, int]] = None,
 ) -> tuple[Figure, Sequence[str]]:
     """Plot a single experiment's test across multiple gridpoints
 
@@ -278,11 +286,12 @@ def plot_experiment_across_gridpoints(
                 the gridsearch argmax array
             Matching logic is AND(OR(parameter matches), OR(index matches))
         style: either "test" or "train"
+        shape: Shape of the grid
     Returns:
         the plotted figure
     """
 
-    fig, gs = _setup_summary_fig(len(args), fig_cell=fig_cell)
+    fig, gs = _setup_summary_fig(shape if shape else len(args), fig_cell=fig_cell)
     if fig_cell is not None:
         fig.suptitle("How do different smoothing compare on an ODE?")
     p_names = []
@@ -359,6 +368,7 @@ def plot_point_across_experiments(
     point: ellipsis | tuple[int | slice, int] = ...,
     *args: tuple[str, str],
     style: str,
+    shape: Optional[tuple[int, int]] = None,
 ) -> Figure:
     """Plot a single parameter's training or test across multiple experiments
 
@@ -373,10 +383,11 @@ def plot_point_across_experiments(
             data, described as a local name and the hexadecimal suffix
             of the result file.
         style: either "test" or "train"
+        shape: Shape of the grid
     Returns:
         the plotted figure
     """
-    fig, gs = _setup_summary_fig(len(args))
+    fig, gs = _setup_summary_fig(shape if shape else len(args))
     fig.suptitle("How well does a smoothing method perform across ODEs?")
 
     for cell, (ode_name, hexstr) in zip(gs, args):
@@ -402,7 +413,10 @@ def plot_point_across_experiments(
 
 
 def plot_summary_metric(
-    metric: str, grid_axis_name: tuple[str, Collection], *args: tuple[str, str]
+    metric: str,
+    grid_axis_name: tuple[str, Collection],
+    *args: tuple[str, str],
+    shape: Optional[tuple[int, int]] = None,
 ) -> None:
     """After multiple gridsearches, plot a comparison for all ODEs
 
@@ -413,8 +427,9 @@ def plot_summary_metric(
             the parameter.
         *args: each additional tuple contains the name of an ODE and
             the hexstr under which it's data is saved.
+        shape: Shape of the grid
     """
-    fig, gs = _setup_summary_fig(len(args))
+    fig, gs = _setup_summary_fig(shape if shape else len(args))
     fig.suptitle(
         f"How well do the methods work on different ODEs as {grid_axis_name} changes?"
     )

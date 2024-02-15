@@ -16,10 +16,14 @@ exp_hexes = {
 }
 
 # %%
-plots.plot_summary_metric("coeff_mae", "sim_params.t_end", *exp_hexes.items())
+plots.plot_summary_metric(
+    "coeff_mae", "sim_params.t_end", *exp_hexes.items(), shape=(2, 4)
+)
 pass
 # %%
-plots.plot_summary_metric("coeff_f1", "sim_params.t_end", *exp_hexes.items())
+plots.plot_summary_metric(
+    "coeff_f1", "sim_params.t_end", *exp_hexes.items(), shape=(2, 4)
+)
 pass
 # %%
 
@@ -49,10 +53,7 @@ pass
 
 # %%
 plots.plot_point_across_experiments(
-    params_kalman,
-    ...,
-    *exp_hexes.items(),
-    style="test",
+    params_kalman, ..., *exp_hexes.items(), style="test", shape=(2, 4)
 )
 # %%
 
@@ -65,6 +66,7 @@ plots.plot_experiment_across_gridpoints(
     ("TV", params_tv),
     ("SavGol", params_savgol),
     style="test",
+    shape=(3, 1),
 )
 # %%
 plots.plot_experiment_across_gridpoints(
@@ -73,6 +75,7 @@ plots.plot_experiment_across_gridpoints(
     ("TV", params_tv),
     ("SavGol", params_savgol),
     style="training",
+    shape=(3, 1),
 )
 
 # %%
