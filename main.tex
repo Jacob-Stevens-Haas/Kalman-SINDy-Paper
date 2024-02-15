@@ -43,7 +43,7 @@ The method takes as input some coordinate measurements over time, such as angles
 When developing model discovery methods for physical systems, explainability takes on greater importance.
 A method that can identify relationships between coordinates and derivatives supports all the theorems of physics, such as spectral analysis, local and global stability, and variable time-stepping.
 While other time-series data science techniques have emerged such as dynamic mode decomposition, recurrent neural nets, and autoencoders, such methods do not seek to search a differentiable function space.
-Applying any physical constraints to them, such as PINN \red{Raissi/Karniadakis} requires wholly new derivations.
+Physics-Informed Neural Networks (PINNs), for example, add a regularization terms to a time-stepping neural network based upon a PDE of known coefficents, as in \cite{Raissi2019}.
 Few tools exist to analyze the discovered models' global or local properties other than exhaustive simulation.
 
 SINDy does seek to establish relationships between derivatives.
@@ -51,8 +51,6 @@ Emerging from \red{cite original paper}, all variants aim to discover a sparse s
 This form has allowed innovations in regression that follow common physics techniques, such as bounding a Lyapunov function in \red{cite Trapping}, enforcing linear stability in \red{cite StableLinearSR3}, and weak formulation in \red{cite WeakSINDy}.
 Explicitly stochastic extensions also provide symbolic representation of variance in \red{cite Boninsegna} and attempt to handle PDE discretization in \red{cite Langevin Regression}.
 This paper could be considered a simpler approach in a similar vein to these latter methods.
-
-Example citation: \cite{Raissi2019}
 
 Kalman smoothing, which this paper adds to SINDy, has a long history of assimilating measurement data in time series.
 From its debut in \red{cite Kalman-original... Kalman Bucy too?}, engineering practice and design have used it for control and prediction across the real world, e.g. in radar systems, econometric variables, weather prediction, and more.
