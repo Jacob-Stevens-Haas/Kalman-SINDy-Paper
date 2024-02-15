@@ -288,7 +288,7 @@ def plot_experiment_across_gridpoints(
         style: either "test" or "train"
         shape: Shape of the grid
     Returns:
-        the plotted figure
+        Tuple of the plotted figure and names of each subplot
     """
 
     fig, gs = _setup_summary_fig(shape if shape else len(args), fig_cell=fig_cell)
@@ -369,6 +369,7 @@ def plot_point_across_experiments(
     *args: tuple[str, str],
     style: str,
     shape: Optional[tuple[int, int]] = None,
+    annotations: bool = True,
 ) -> Figure:
     """Plot a single parameter's training or test across multiple experiments
 
@@ -384,8 +385,9 @@ def plot_point_across_experiments(
             of the result file.
         style: either "test" or "train"
         shape: Shape of the grid
+        annotations: whether to add labels or leave figure clean
     Returns:
-        the plotted figure
+        Tuple of the plotted figure and names of each subplot
     """
     fig, gs = _setup_summary_fig(shape if shape else len(args))
     fig.suptitle("How well does a smoothing method perform across ODEs?")
@@ -404,12 +406,13 @@ def plot_point_across_experiments(
                 ax = _plot_train_test_cell(
                     [fig, cell], trajectory, style, annotations=False
                 )
-                ax.set_title(ode_name)
+                if annotations:
+                    ax.set_title(ode_name)
                 break
         else:
             warn(f"Did not find a parameter match for {ode_name} experiment")
     ax.legend()
-    return fig
+    return fig, [name for name, _ in args]
 
 
 def plot_summary_metric(
@@ -449,6 +452,7 @@ def plot_summary_test_train(
     exps: Sequence[tuple[str, str]],
     params: Sequence[tuple[str, dict] | ellipsis | tuple[int | slice, int]],
     style: str,
+    rows: Optional[str] = None,
 ) -> None:
     """Plot a comparison of different variants across experiments
 
@@ -462,25 +466,45 @@ def plot_summary_test_train(
             - an indexing tuple indicating optima for that tuple's location in
                 the gridsearch argmax array
             Matching logic is AND(OR(parameter matches), OR(index matches))
-        style
+        style: "test" or "train"
+        rows: "exps" or "params"
     """
-    n_exp = len(exps)
     n_params = len(params)
-    figsize = (3 * n_params, 3 * n_exp)
+    if rows is None:
+        rows = "exps"
+    if rows == "exps":
+        row_keys = exps
+        col_keys = params
+    elif rows == "params":
+        row_keys = params
+        col_keys = exps
+    else:
+        raise ValueError("rows must be either 'exps' or 'params'")
+    n_rows = len(row_keys)
+    n_cols = len(col_keys)
+
+    figsize = (3 * n_rows, 3 * n_cols)
     fig = plt.figure(figsize=figsize)
-    grid = fig.add_gridspec(n_exp, 2, width_ratios=(1, 20))
-    for n_row, (ode_name, hexstr) in enumerate(exps):
+    grid = fig.add_gridspec(n_rows, 2, width_ratios=(1, 20))
+    common_args = {"shape": (1, n_cols), "style": style, "annotations": False}
+    for n_row, (row_name, row_key) in enumerate(row_keys):
         cell = grid[n_row, 1]
-        _, p_names = plot_experiment_across_gridpoints(
-            hexstr, *params, style=style, fig_cell=(fig, cell), annotations=False
-        )
+        if rows == "exps":
+            _, col_names = plot_experiment_across_gridpoints(
+                row_key, *col_keys, fig_cell=(fig, cell), **common_args
+            )
+        else:
+            _, col_names = plot_point_across_experiments(
+                row_key, ..., *col_keys, **common_args
+            )
+
         empty_ax = fig.add_subplot(grid[n_row, 0])
         empty_ax.axis("off")
         empty_ax.text(
-            -0.1, 0.5, ode_name, va="center", transform=empty_ax.transAxes, rotation=90
+            -0.1, 0.5, row_name, va="center", transform=empty_ax.transAxes, rotation=90
         )
     first_row = fig.get_axes()[:n_params]
-    for ax, p_name in zip(first_row, p_names):
+    for ax, p_name in zip(first_row, col_names):
         ax.set_title(p_name)
     fig.subplots_adjust(top=0.95)
     return fig
