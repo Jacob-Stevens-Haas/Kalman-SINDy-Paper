@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from types import EllipsisType as ellipsis
-from typing import Any, Optional, Sequence, cast
+from typing import Any, NewType, Optional, Sequence, cast
 from warnings import warn
 
 import gen_experiments.plotting as genplot
@@ -8,7 +8,13 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import mitosis
 import numpy as np
-from gen_experiments.utils import SavedData, _amax_to_full_inds, _grid_locator_match
+from gen_experiments.utils import (
+    GridsearchResult,
+    GridsearchResultDetails,
+    SavedData,
+    _amax_to_full_inds,
+    _grid_locator_match,
+)
 from matplotlib.axes._axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec, SubplotSpec
@@ -22,6 +28,12 @@ CMEAS = CMAP[1]
 CEST = CMAP[2]
 CGRAY = (0.85, 0.85, 0.85)
 plt.rcParams["text.usetex"] = True
+
+
+SelectSome = ellipsis | tuple[int | slice, int]
+SelectMatch = dict[str, int | str]
+SelectStatement = tuple[tuple[SelectMatch, ...], tuple[SelectSome, ...]]
+ExpKey = NewType("ExpKey", str)
 
 
 @dataclass
@@ -267,10 +279,10 @@ def _setup_summary_fig(
 
 
 def plot_experiment_across_gridpoints(
-    hexstr: str,
-    *args: tuple[str, dict] | ellipsis | tuple[int | slice, int],
-    style: str,
+    experiment: tuple[str, ExpKey],
+    *args: tuple[str, SelectMatch] | SelectSome,
     fig_cell: Optional[tuple[Figure, SubplotSpec]] = None,
+    style: str,
     annotations: bool = True,
     shape: Optional[tuple[int, int]] = None,
 ) -> tuple[Figure, Sequence[str]]:
@@ -295,11 +307,8 @@ def plot_experiment_across_gridpoints(
     if fig_cell is not None:
         fig.suptitle("How do different smoothing compare on an ODE?")
     p_names = []
-    results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
-    amax_arrays = [
-        [single_ser_and_axis[1] for single_ser_and_axis in single_series_all_axes]
-        for _, single_series_all_axes in results["series_data"].items()
-    ]
+    results = mitosis.load_trial_data(experiment[1], trials_folder=TRIAL_DATA)
+    amax_arrays = _argmaxes_from_gsearch(cast(GridsearchResultDetails, results))
     parg_inds = {
         argind
         for argind, arg in enumerate(args)
@@ -319,7 +328,7 @@ def plot_experiment_across_gridpoints(
             ):
                 p_names.append(p_name)
                 ax = _plot_train_test_cell(
-                    (fig, cell), trajectory, style, annotations=False
+                    (fig, cell), trajectory, style=style, annotations=False
                 )
                 if annotations:
                     ax.set_title(p_name)
@@ -331,9 +340,74 @@ def plot_experiment_across_gridpoints(
     return Figure, p_names
 
 
+def _argmaxes_from_gsearch(
+    results: GridsearchResultDetails,
+) -> list[list[GridsearchResult[np.void]]]:
+    sdata = results["series_data"].items()
+    all_series: list[list[GridsearchResult[np.void]]] = []
+    for _, single_series_all_axes in sdata:
+        all_keep_axes: list[GridsearchResult[np.void]] = []
+        for _, gridaxis_argmaxes in single_series_all_axes:
+            all_keep_axes.append(cast(GridsearchResult[np.void], gridaxis_argmaxes))
+        all_series.append(all_keep_axes)
+    return all_series
+
+
+def plot_point_across_experiments(
+    params: SelectMatch,
+    point: SelectSome = ...,
+    *args: tuple[str, ExpKey],
+    fig_cell: Optional[tuple[Figure, SubplotSpec]] = None,
+    style: str,
+    annotations: bool = True,
+    shape: Optional[tuple[int, int]] = None,
+) -> tuple[Figure, Sequence[str]]:
+    """Plot a single parameter's training or test across multiple experiments
+
+    Arguments:
+        params: parameters defining the gridpoint to match
+        point: gridpoint spec from the argmax array, defined as either an
+            - ellipsis, indicating optima across all metrics across all plot
+                axes
+            - indexing tuple indicating optima for that tuple's location in
+                the gridsearch argmax array
+        args (experiment_name, hexstr): From which experiments to load
+            data, described as a local name and the hexadecimal suffix
+            of the result file.
+        style: either "test" or "train"
+        shape: Shape of the grid
+        annotations: whether to add labels or leave figure clean
+    Returns:
+        Tuple of the plotted figure and names of each subplot
+    """
+    fig, gs = _setup_summary_fig(shape if shape else len(args), fig_cell=fig_cell)
+    if fig_cell is not None:
+        fig.suptitle("How well does a smoothing method perform across ODEs?")
+
+    for cell, (ode_name, hexstr) in zip(gs, args):
+        results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
+        amax_arrays = _argmaxes_from_gsearch(cast(GridsearchResultDetails, results))
+        full_inds = _amax_to_full_inds((point,), amax_arrays)
+        for trajectory in results["plot_data"]:
+            if _grid_locator_match(
+                trajectory["params"], trajectory["pind"], [params], full_inds
+            ):
+                ax = _plot_train_test_cell(
+                    (fig, cell), trajectory, style=style, annotations=False
+                )
+                if annotations:
+                    ax.set_title(ode_name)
+                break
+        else:
+            warn(f"Did not find a parameter match for {ode_name} experiment")
+    ax.legend()
+    return fig, [name for name, _ in args]
+
+
 def _plot_train_test_cell(
     fig_cell: tuple[Figure, SubplotSpec | int | tuple[int, int, int]],
     trajectory: SavedData,
+    *,
     style: str,
     annotations: bool = False,
 ) -> Axes:
@@ -361,58 +435,6 @@ def _plot_train_test_cell(
         )
     plot_func(plot_location, *data, labels=annotations)
     return ax
-
-
-def plot_point_across_experiments(
-    params: dict,
-    point: ellipsis | tuple[int | slice, int] = ...,
-    *args: tuple[str, str],
-    style: str,
-    shape: Optional[tuple[int, int]] = None,
-    annotations: bool = True,
-) -> tuple[Figure, Sequence[str]]:
-    """Plot a single parameter's training or test across multiple experiments
-
-    Arguments:
-        params: parameters defining the gridpoint to match
-        point: gridpoint spec from the argmax array, defined as either an
-            - ellipsis, indicating optima across all metrics across all plot
-                axes
-            - indexing tuple indicating optima for that tuple's location in
-                the gridsearch argmax array
-        args (experiment_name, hexstr): From which experiments to load
-            data, described as a local name and the hexadecimal suffix
-            of the result file.
-        style: either "test" or "train"
-        shape: Shape of the grid
-        annotations: whether to add labels or leave figure clean
-    Returns:
-        Tuple of the plotted figure and names of each subplot
-    """
-    fig, gs = _setup_summary_fig(shape if shape else len(args))
-    fig.suptitle("How well does a smoothing method perform across ODEs?")
-
-    for cell, (ode_name, hexstr) in zip(gs, args):
-        results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
-        amax_arrays = [
-            [single_ser_and_axis[1] for single_ser_and_axis in single_series_all_axes]
-            for _, single_series_all_axes in results["series_data"].items()
-        ]
-        full_inds = _amax_to_full_inds((point,), amax_arrays)
-        for trajectory in results["plot_data"]:
-            if _grid_locator_match(
-                trajectory["params"], trajectory["pind"], [params], full_inds
-            ):
-                ax = _plot_train_test_cell(
-                    [fig, cell], trajectory, style, annotations=False
-                )
-                if annotations:
-                    ax.set_title(ode_name)
-                break
-        else:
-            warn(f"Did not find a parameter match for {ode_name} experiment")
-    ax.legend()
-    return fig, [name for name, _ in args]
 
 
 def plot_summary_metric(
@@ -445,10 +467,6 @@ def plot_summary_metric(
             ax.plot(grid_axis, s_data[grid_axis_index][0][metric_index], label=s_name)
         ax.set_title(ode_name)
     ax.legend()
-
-
-SelectSome = ellipsis | tuple[int | slice, int]
-SelectMatch = dict[str, int | str]
 
 
 def plot_summary_test_train(
@@ -494,7 +512,7 @@ def plot_summary_test_train(
             )
         else:
             _, col_names = plot_point_across_experiments(
-                row_key, ..., *col_keys, **common_args
+                row_key, ..., *col_keys, fig_cell=(fig, cell), **common_args
             )
 
         empty_ax = fig.add_subplot(grid[n_row, 0])

@@ -4,15 +4,16 @@ from gen_experiments.utils import strict_find_grid_match
 
 import ksindy_figs.data as data
 import ksindy_figs.plotting as plots
+from ksindy_figs.plotting import ExpKey
 
 exp_hexes = {
-    "cubic_ho": "d41b48",
-    "duff": "9a2339",
-    "hopf": "e6e691",
-    "lv": "d453b9",
-    "ross": "831dc2",
-    "sho": "a1757b",
-    "vdp": "25e6c3",
+    "cubic_ho": ExpKey("d41b48"),
+    "duff": ExpKey("9a2339"),
+    "hopf": ExpKey("e6e691"),
+    "lv": ExpKey("d453b9"),
+    "ross": ExpKey("831dc2"),
+    "sho": ExpKey("a1757b"),
+    "vdp": ExpKey("25e6c3"),
 }
 
 # %%
