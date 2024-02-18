@@ -529,10 +529,10 @@ def plot_summary_test_train(
         empty_ax = fig.add_subplot(grid[n_row + 1, 0])
         empty_ax.axis("off")
         empty_ax.text(
-            -0.1, 0.5, row_name, va="center", transform=empty_ax.transAxes, rotation=90
+            0, 0.5, row_name, va="center", transform=empty_ax.transAxes, rotation=90
         )
     first_row = fig.get_axes()[:n_cols]
     for ax, col_name in zip(first_row, col_names):
         ax.set_title(col_name)
-    fig.tight_layout()
+    grid.tight_layout(fig)
     return fig
