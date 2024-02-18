@@ -37,7 +37,7 @@ plots.plot_summary_test_train(
     [*exp_hexes.items()],
     [("Kalman", params_kalman), ("TV", params_tv), ("SavGol", params_savgol)],
     style="training",
-    rows="exps",
+    rows="params",
 )
 pass
 # %%

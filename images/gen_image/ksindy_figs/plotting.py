@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from types import EllipsisType as ellipsis
-from typing import Any, Collection, Optional, Sequence, cast
+from typing import Any, Optional, Sequence, cast
 from warnings import warn
 
 import gen_experiments.plotting as genplot
@@ -10,8 +10,8 @@ import mitosis
 import numpy as np
 from gen_experiments.utils import SavedData, _amax_to_full_inds, _grid_locator_match
 from matplotlib.axes._axes import Axes
+from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec, SubplotSpec
-from matplotlib.pyplot import Figure
 
 from ._typing import Float1D, Float2D
 from .data import TRIAL_DATA
@@ -235,8 +235,8 @@ def make_composite_fig1(pdat: PlotData, q_props: dict[str, Any]) -> None:
 def _setup_summary_fig(
     cells_or_shape: int | tuple[int, int],
     *,
-    fig_cell: Optional[tuple[plt.Figure, SubplotSpec]] = None,
-) -> tuple[plt.Figure, GridSpec | GridSpecFromSubplotSpec]:
+    fig_cell: Optional[tuple[Figure, SubplotSpec]] = None,
+) -> tuple[Figure, GridSpec | GridSpecFromSubplotSpec]:
     """Create neatly laid-out arrangements for subplots
 
     Creates an evenly-spaced gridpsec to fit follow-on plots and a
@@ -257,7 +257,7 @@ def _setup_summary_fig(
         n_cols = min(n_sub, 3)
     else:
         n_rows, n_cols = cells_or_shape
-    figsize = [3 * n_cols, 3 * n_rows]
+    figsize = (3 * n_cols, 3 * n_rows)
     if fig_cell is None:
         fig = plt.figure(figsize=figsize)
         gs = fig.add_gridspec(n_rows, n_cols)
@@ -270,7 +270,7 @@ def plot_experiment_across_gridpoints(
     hexstr: str,
     *args: tuple[str, dict] | ellipsis | tuple[int | slice, int],
     style: str,
-    fig_cell: tuple[Figure, SubplotSpec] = None,
+    fig_cell: Optional[tuple[Figure, SubplotSpec]] = None,
     annotations: bool = True,
     shape: Optional[tuple[int, int]] = None,
 ) -> tuple[Figure, Sequence[str]]:
@@ -370,7 +370,7 @@ def plot_point_across_experiments(
     style: str,
     shape: Optional[tuple[int, int]] = None,
     annotations: bool = True,
-) -> Figure:
+) -> tuple[Figure, Sequence[str]]:
     """Plot a single parameter's training or test across multiple experiments
 
     Arguments:
@@ -417,7 +417,7 @@ def plot_point_across_experiments(
 
 def plot_summary_metric(
     metric: str,
-    grid_axis_name: tuple[str, Collection],
+    grid_axis_name: str,
     *args: tuple[str, str],
     shape: Optional[tuple[int, int]] = None,
 ) -> None:
@@ -426,8 +426,7 @@ def plot_summary_metric(
     Plots the overall results for a single metric, single grid axis
     Args:
         metric: which metric is being plotted
-        grid_axis: the name of the parameter varied and the values of
-            the parameter.
+        grid_axis_name: the name of the parameter varied.
         *args: each additional tuple contains the name of an ODE and
             the hexstr under which it's data is saved.
         shape: Shape of the grid
@@ -448,9 +447,13 @@ def plot_summary_metric(
     ax.legend()
 
 
+SelectSome = ellipsis | tuple[int | slice, int]
+SelectMatch = dict[str, int | str]
+
+
 def plot_summary_test_train(
     exps: Sequence[tuple[str, str]],
-    params: Sequence[tuple[str, dict] | ellipsis | tuple[int | slice, int]],
+    params: Sequence[tuple[str, SelectMatch]],
     style: str,
     rows: Optional[str] = None,
 ) -> None:
@@ -459,13 +462,9 @@ def plot_summary_test_train(
     Args:
         exps: From which experiments to load data, described as a local name
             and the hexadecimal suffix of the result file.
-        params: which gridpoints to compare, described as either:
-            - a tuple of local name and parameters to match.
-            - ellipsis, indicating optima across all metrics across all plot
-                axes
-            - an indexing tuple indicating optima for that tuple's location in
-                the gridsearch argmax array
-            Matching logic is AND(OR(parameter matches), OR(index matches))
+        params: which gridpoints to compare, described as a tuple of local name
+            and parameters to match.  If a parameters matches multiple grid
+            points, only one will be returned.
         style: "test" or "train"
         rows: "exps" or "params"
     """
