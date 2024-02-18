@@ -25,12 +25,19 @@ plots.plot_summary_metric(
     *exp_hexes.items(),
     shape=(2, 4),
     title=False,
+    metric_fname=r"$\xi$ MAE",
     grid_axis_fname="data duration",
 )
 pass
 # %%
 plots.plot_summary_metric(
-    "coeff_f1", "sim_params.t_end", *exp_hexes.items(), shape=(2, 4), title=False
+    "coeff_f1",
+    "sim_params.t_end",
+    *exp_hexes.items(),
+    shape=(2, 4),
+    title=False,
+    metric_fname=r"$\xi$ F1 score",
+    grid_axis_fname="data duration",
 )
 pass
 # %%
@@ -53,7 +60,7 @@ fig = plots.plot_summary_test_train(
     [*exp_hexes.items()],
     [("Kalman", params_kalman), ("TV", params_tv), ("SavGol", params_savgol)],
     style="test",
-    row_cat="exps",
+    row_cat="params",
 )
 pass
 

@@ -450,6 +450,7 @@ def plot_summary_metric(
     *args: tuple[str, str],
     shape: Optional[tuple[int, int]] = None,
     title: bool = True,
+    metric_fname: Optional[str] = None,
     grid_axis_fname: Optional[str] = None,
 ) -> None:
     """After multiple gridsearches, plot a comparison for all ODEs
@@ -464,12 +465,14 @@ def plot_summary_metric(
         title: whether to display title
         grid_axis_fname: A fancy name for the grid axis when printing.
     """
+    if metric_fname is None:
+        metric_fname = metric
     if grid_axis_fname is None:
         grid_axis_fname = grid_axis_name
     fig, gs = _setup_summary_fig(shape if shape else len(args) + 1)
     title_1 = "How well do the methods work on"
     title_2 = f" different ODEs as {grid_axis_fname}"
-    title_3 = " changes?"
+    title_3 = f" changes? ({metric_fname})"
     if title:
         fig.suptitle(title_1 + title_2 + title_3)
     for cell, (ode_name, hexstr) in zip(gs, args):
