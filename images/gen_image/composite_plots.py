@@ -38,7 +38,7 @@ plots.plot_summary_test_train(
     [*exp_hexes.items()],
     [("Kalman", params_kalman), ("TV", params_tv), ("SavGol", params_savgol)],
     style="training",
-    rows="params",
+    row_cat="params",
 )
 pass
 # %%
@@ -46,7 +46,7 @@ plots.plot_summary_test_train(
     [*exp_hexes.items()],
     [("Kalman", params_kalman), ("TV", params_tv), ("SavGol", params_savgol)],
     style="test",
-    rows="exps",
+    row_cat="exps",
 )
 pass
 
@@ -56,7 +56,12 @@ pass
 
 # %%
 plots.plot_point_across_experiments(
-    params_kalman, ..., *exp_hexes.items(), style="test", shape=(2, 4)
+    ("Kalman", params_kalman),
+    ...,
+    *exp_hexes.items(),
+    style="test",
+    shape=(1, 7),
+    annotations=False,
 )
 # %%
 
@@ -64,7 +69,7 @@ plots.plot_point_across_experiments(
 results = mitosis.load_trial_data(exp_hexes["cubic_ho"], trials_folder=data.TRIAL_DATA)
 
 plots.plot_experiment_across_gridpoints(
-    exp_hexes["cubic_ho"],
+    ("Cubic HO", exp_hexes["cubic_ho"]),
     ("Kalman", params_kalman),
     ("TV", params_tv),
     ("SavGol", params_savgol),

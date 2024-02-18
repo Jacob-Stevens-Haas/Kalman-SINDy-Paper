@@ -32,7 +32,9 @@ plt.rcParams["text.usetex"] = True
 
 SelectSome = ellipsis | tuple[int | slice, int]
 SelectMatch = dict[str, int | str]
+NamedMatch = tuple[str, SelectMatch]
 SelectStatement = tuple[tuple[SelectMatch, ...], tuple[SelectSome, ...]]
+NamedSelect = tuple[tuple[NamedMatch, ...], tuple[SelectSome, ...]]
 ExpKey = NewType("ExpKey", str)
 
 
@@ -307,7 +309,8 @@ def plot_experiment_across_gridpoints(
     if fig_cell is not None:
         fig.suptitle("How do different smoothing compare on an ODE?")
     p_names = []
-    results = mitosis.load_trial_data(experiment[1], trials_folder=TRIAL_DATA)
+    ode_name, hexstr = experiment
+    results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
     amax_arrays = _argmaxes_from_gsearch(cast(GridsearchResultDetails, results))
     parg_inds = {
         argind
@@ -337,26 +340,14 @@ def plot_experiment_across_gridpoints(
             warn(f"Did not find a parameter match for {p_name} experiment")
     if annotations:
         ax.legend()
+        fig.suptitle(f"ODE: {ode_name}")
     return Figure, p_names
 
 
-def _argmaxes_from_gsearch(
-    results: GridsearchResultDetails,
-) -> list[list[GridsearchResult[np.void]]]:
-    sdata = results["series_data"].items()
-    all_series: list[list[GridsearchResult[np.void]]] = []
-    for _, single_series_all_axes in sdata:
-        all_keep_axes: list[GridsearchResult[np.void]] = []
-        for _, gridaxis_argmaxes in single_series_all_axes:
-            all_keep_axes.append(cast(GridsearchResult[np.void], gridaxis_argmaxes))
-        all_series.append(all_keep_axes)
-    return all_series
-
-
 def plot_point_across_experiments(
-    params: SelectMatch,
+    named_params: NamedMatch,
     point: SelectSome = ...,
-    *args: tuple[str, ExpKey],
+    *exps: tuple[str, ExpKey],
     fig_cell: Optional[tuple[Figure, SubplotSpec]] = None,
     style: str,
     annotations: bool = True,
@@ -365,7 +356,7 @@ def plot_point_across_experiments(
     """Plot a single parameter's training or test across multiple experiments
 
     Arguments:
-        params: parameters defining the gridpoint to match
+        params: name and parameters defining the gridpoint to match
         point: gridpoint spec from the argmax array, defined as either an
             - ellipsis, indicating optima across all metrics across all plot
                 axes
@@ -380,11 +371,12 @@ def plot_point_across_experiments(
     Returns:
         Tuple of the plotted figure and names of each subplot
     """
-    fig, gs = _setup_summary_fig(shape if shape else len(args), fig_cell=fig_cell)
+    pname, params = named_params
+    fig, gs = _setup_summary_fig(shape if shape else len(exps), fig_cell=fig_cell)
     if fig_cell is not None:
         fig.suptitle("How well does a smoothing method perform across ODEs?")
 
-    for cell, (ode_name, hexstr) in zip(gs, args):
+    for cell, (ode_name, hexstr) in zip(gs, exps):
         results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
         amax_arrays = _argmaxes_from_gsearch(cast(GridsearchResultDetails, results))
         full_inds = _amax_to_full_inds((point,), amax_arrays)
@@ -400,8 +392,23 @@ def plot_point_across_experiments(
                 break
         else:
             warn(f"Did not find a parameter match for {ode_name} experiment")
-    ax.legend()
-    return fig, [name for name, _ in args]
+    if annotations:
+        ax.legend()
+        fig.suptitle("How does a set of parameters perform across ODEs?")
+    return fig, [name for name, _ in exps]
+
+
+def _argmaxes_from_gsearch(
+    results: GridsearchResultDetails,
+) -> list[list[GridsearchResult[np.void]]]:
+    sdata = results["series_data"].items()
+    all_series: list[list[GridsearchResult[np.void]]] = []
+    for _, single_series_all_axes in sdata:
+        all_keep_axes: list[GridsearchResult[np.void]] = []
+        for _, gridaxis_argmaxes in single_series_all_axes:
+            all_keep_axes.append(cast(GridsearchResult[np.void], gridaxis_argmaxes))
+        all_series.append(all_keep_axes)
+    return all_series
 
 
 def _plot_train_test_cell(
@@ -470,11 +477,11 @@ def plot_summary_metric(
 
 
 def plot_summary_test_train(
-    exps: Sequence[tuple[str, str]],
+    exps: Sequence[tuple[str, ExpKey]],
     params: Sequence[tuple[str, SelectMatch]],
     style: str,
-    rows: Optional[str] = None,
-) -> None:
+    row_cat: Optional[str] = None,
+) -> Figure:
     """Plot a comparison of different variants across experiments
 
     Args:
@@ -484,35 +491,39 @@ def plot_summary_test_train(
             and parameters to match.  If a parameters matches multiple grid
             points, only one will be returned.
         style: "test" or "train"
-        rows: "exps" or "params"
+        row_cat: row category, either "exps" or "params"
     """
-    n_params = len(params)
-    if rows is None:
-        rows = "exps"
-    if rows == "exps":
-        row_keys = exps
-        col_keys = params
-    elif rows == "params":
-        row_keys = params
-        col_keys = exps
+    if row_cat is None:
+        row_cat = "exps"
+    if row_cat == "exps":
+        rows = exps
+        cols = params
+    elif row_cat == "params":
+        rows = params
+        cols = exps
     else:
         raise ValueError("rows must be either 'exps' or 'params'")
-    n_rows = len(row_keys)
-    n_cols = len(col_keys)
-
+    n_rows = len(rows)
+    n_cols = len(cols)
+    col_names = [name for name, _ in cols]
     figsize = (3 * n_rows, 3 * n_cols)
     fig = plt.figure(figsize=figsize)
     grid = fig.add_gridspec(n_rows, 2, width_ratios=(1, 20))
     common_args = {"shape": (1, n_cols), "style": style, "annotations": False}
-    for n_row, (row_name, row_key) in enumerate(row_keys):
-        cell = grid[n_row, 1]
-        if rows == "exps":
-            _, col_names = plot_experiment_across_gridpoints(
-                row_key, *col_keys, fig_cell=(fig, cell), **common_args
+    for n_row, (row_name, row_key) in enumerate(rows):
+        common_args |= {"fig_cell": (fig, grid[n_row, 1])}
+        if row_cat == "exps":
+            plot_experiment_across_gridpoints(
+                (row_name, cast(ExpKey, row_key)),
+                *cast(Sequence[tuple[str, SelectMatch]], cols),
+                **common_args,
             )
         else:
-            _, col_names = plot_point_across_experiments(
-                row_key, ..., *col_keys, fig_cell=(fig, cell), **common_args
+            plot_point_across_experiments(
+                (row_name, cast(SelectMatch, row_key)),
+                ...,
+                *cast(Sequence[tuple[str, ExpKey]], cols),
+                **common_args,
             )
 
         empty_ax = fig.add_subplot(grid[n_row, 0])
@@ -520,8 +531,8 @@ def plot_summary_test_train(
         empty_ax.text(
             -0.1, 0.5, row_name, va="center", transform=empty_ax.transAxes, rotation=90
         )
-    first_row = fig.get_axes()[:n_params]
-    for ax, p_name in zip(first_row, col_names):
-        ax.set_title(p_name)
+    first_row = fig.get_axes()[:n_cols]
+    for ax, col_name in zip(first_row, col_names):
+        ax.set_title(col_name)
     fig.subplots_adjust(top=0.95)
     return fig
