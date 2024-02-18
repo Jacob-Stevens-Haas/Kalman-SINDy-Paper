@@ -506,12 +506,12 @@ def plot_summary_test_train(
     n_rows = len(rows)
     n_cols = len(cols)
     col_names = [name for name, _ in cols]
-    figsize = (3 * n_rows, 3 * n_cols)
+    figsize = (0.5 + 3 * n_cols, 0.5 + 3 * n_rows)
     fig = plt.figure(figsize=figsize)
-    grid = fig.add_gridspec(n_rows, 2, width_ratios=(1, 20))
+    grid = fig.add_gridspec(n_rows + 1, 2, width_ratios=(1, 12 * n_cols))
     common_args = {"shape": (1, n_cols), "style": style, "annotations": False}
     for n_row, (row_name, row_key) in enumerate(rows):
-        common_args |= {"fig_cell": (fig, grid[n_row, 1])}
+        common_args |= {"fig_cell": (fig, grid[n_row + 1, 1:])}
         if row_cat == "exps":
             plot_experiment_across_gridpoints(
                 (row_name, cast(ExpKey, row_key)),
@@ -526,7 +526,7 @@ def plot_summary_test_train(
                 **common_args,
             )
 
-        empty_ax = fig.add_subplot(grid[n_row, 0])
+        empty_ax = fig.add_subplot(grid[n_row + 1, 0])
         empty_ax.axis("off")
         empty_ax.text(
             -0.1, 0.5, row_name, va="center", transform=empty_ax.transAxes, rotation=90
@@ -534,5 +534,5 @@ def plot_summary_test_train(
     first_row = fig.get_axes()[:n_cols]
     for ax, col_name in zip(first_row, col_names):
         ax.set_title(col_name)
-    fig.subplots_adjust(top=0.95)
+    fig.tight_layout()
     return fig

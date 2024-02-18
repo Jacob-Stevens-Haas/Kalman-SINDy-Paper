@@ -7,13 +7,13 @@ import ksindy_figs.plotting as plots
 from ksindy_figs.plotting import ExpKey
 
 exp_hexes = {
-    "cubic_ho": ExpKey("d41b48"),
-    "duff": ExpKey("9a2339"),
-    "hopf": ExpKey("e6e691"),
-    "lv": ExpKey("d453b9"),
-    "ross": ExpKey("831dc2"),
-    "sho": ExpKey("a1757b"),
-    "vdp": ExpKey("25e6c3"),
+    "Cubic HO": ExpKey("d41b48"),
+    "Duffing": ExpKey("9a2339"),
+    "Hopf": ExpKey("e6e691"),
+    "Lotka-Volterra": ExpKey("d453b9"),
+    "Rossler": ExpKey("831dc2"),
+    "SHO": ExpKey("a1757b"),
+    "Van der Pol": ExpKey("25e6c3"),
 }
 
 # %%
@@ -34,7 +34,7 @@ params_tv = noise_params | {"diff_params.kind": "trend_filtered"}
 params_savgol = noise_params | {"diff_params.diffcls": "SmoothedFiniteDifference"}
 
 # %%
-plots.plot_summary_test_train(
+fig = plots.plot_summary_test_train(
     [*exp_hexes.items()],
     [("Kalman", params_kalman), ("TV", params_tv), ("SavGol", params_savgol)],
     style="training",
@@ -42,7 +42,7 @@ plots.plot_summary_test_train(
 )
 pass
 # %%
-plots.plot_summary_test_train(
+fig = plots.plot_summary_test_train(
     [*exp_hexes.items()],
     [("Kalman", params_kalman), ("TV", params_tv), ("SavGol", params_savgol)],
     style="test",
@@ -66,10 +66,10 @@ plots.plot_point_across_experiments(
 # %%
 
 
-results = mitosis.load_trial_data(exp_hexes["cubic_ho"], trials_folder=data.TRIAL_DATA)
+results = mitosis.load_trial_data(exp_hexes["Cubic HO"], trials_folder=data.TRIAL_DATA)
 
 plots.plot_experiment_across_gridpoints(
-    ("Cubic HO", exp_hexes["cubic_ho"]),
+    ("Cubic HO", exp_hexes["Cubic HO"]),
     ("Kalman", params_kalman),
     ("TV", params_tv),
     ("SavGol", params_savgol),
@@ -78,7 +78,7 @@ plots.plot_experiment_across_gridpoints(
 )
 # %%
 plots.plot_experiment_across_gridpoints(
-    ("Rossler", exp_hexes["ross"]),
+    ("Rossler", exp_hexes["Rossler"]),
     ("Kalman", params_kalman),
     ("TV", params_tv),
     ("SavGol", params_savgol),
