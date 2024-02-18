@@ -449,6 +449,8 @@ def plot_summary_metric(
     grid_axis_name: str,
     *args: tuple[str, str],
     shape: Optional[tuple[int, int]] = None,
+    title: bool = True,
+    grid_axis_fname: Optional[str] = None,
 ) -> None:
     """After multiple gridsearches, plot a comparison for all ODEs
 
@@ -459,11 +461,17 @@ def plot_summary_metric(
         *args: each additional tuple contains the name of an ODE and
             the hexstr under which it's data is saved.
         shape: Shape of the grid
+        title: whether to display title
+        grid_axis_fname: A fancy name for the grid axis when printing.
     """
-    fig, gs = _setup_summary_fig(shape if shape else len(args))
-    fig.suptitle(
-        f"How well do the methods work on different ODEs as {grid_axis_name} changes?"
-    )
+    if grid_axis_fname is None:
+        grid_axis_fname = grid_axis_name
+    fig, gs = _setup_summary_fig(shape if shape else len(args) + 1)
+    title_1 = "How well do the methods work on"
+    title_2 = f" different ODEs as {grid_axis_fname}"
+    title_3 = " changes?"
+    if title:
+        fig.suptitle(title_1 + title_2 + title_3)
     for cell, (ode_name, hexstr) in zip(gs, args):
         results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
         grid_axis_index = results["grid_params"].index(grid_axis_name)
@@ -473,7 +481,18 @@ def plot_summary_metric(
         for s_name, s_data in results["series_data"].items():
             ax.plot(grid_axis, s_data[grid_axis_index][0][metric_index], label=s_name)
         ax.set_title(ode_name)
-    ax.legend()
+    legend_items = ax.get_legend_handles_labels()
+    last_cell = gs[-1, -1]
+    last_axes = fig.add_subplot(last_cell)
+    tx_props = {"fontsize": "large", "bbox": {"fill": False}}
+    if not title:
+        legend_loc = (0.2, 0.2)
+        title_text = f"{title_1}\n{title_2}\n{title_3}\n\n\n\n\n"
+        last_axes.text(0.5, 0.5, title_text, ha="center", va="center", **tx_props)
+    else:
+        legend_loc = "center"
+    last_axes.axis("off")
+    last_axes.legend(*legend_items, loc=legend_loc)
 
 
 def plot_summary_test_train(

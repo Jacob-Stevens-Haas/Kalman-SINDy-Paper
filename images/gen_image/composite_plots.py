@@ -1,6 +1,8 @@
 # %%
+from typing import cast
+
 import mitosis
-from gen_experiments.utils import strict_find_grid_match
+from gen_experiments.utils import FullSINDyTrialData, strict_find_grid_match
 
 import ksindy_figs.data as data
 import ksindy_figs.plotting as plots
@@ -18,12 +20,17 @@ exp_hexes = {
 
 # %%
 plots.plot_summary_metric(
-    "coeff_mae", "sim_params.t_end", *exp_hexes.items(), shape=(2, 4)
+    "coeff_mae",
+    "sim_params.t_end",
+    *exp_hexes.items(),
+    shape=(2, 4),
+    title=False,
+    grid_axis_fname="data duration",
 )
 pass
 # %%
 plots.plot_summary_metric(
-    "coeff_f1", "sim_params.t_end", *exp_hexes.items(), shape=(2, 4)
+    "coeff_f1", "sim_params.t_end", *exp_hexes.items(), shape=(2, 4), title=False
 )
 pass
 # %%
@@ -90,6 +97,6 @@ plots.plot_experiment_across_gridpoints(
 from gen_experiments.odes import plot_ode_panel
 
 single_result = strict_find_grid_match(results, params=params_kalman)
-plot_ode_panel(single_result)
+plot_ode_panel(cast(FullSINDyTrialData, single_result))
 
 # %%
