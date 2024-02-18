@@ -306,7 +306,7 @@ def plot_experiment_across_gridpoints(
     """
 
     fig, gs = _setup_summary_fig(shape if shape else len(args), fig_cell=fig_cell)
-    if fig_cell is not None:
+    if fig_cell is not None and annotations:
         fig.suptitle("How do different smoothing compare on an ODE?")
     p_names = []
     ode_name, hexstr = experiment
@@ -373,7 +373,7 @@ def plot_point_across_experiments(
     """
     pname, params = named_params
     fig, gs = _setup_summary_fig(shape if shape else len(exps), fig_cell=fig_cell)
-    if fig_cell is not None:
+    if fig_cell is not None and annotations:
         fig.suptitle("How well does a smoothing method perform across ODEs?")
 
     for cell, (ode_name, hexstr) in zip(gs, exps):

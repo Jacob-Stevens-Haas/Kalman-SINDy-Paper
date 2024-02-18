@@ -78,19 +78,12 @@ plots.plot_experiment_across_gridpoints(
 )
 # %%
 plots.plot_experiment_across_gridpoints(
-    exp_hexes["ross"],
+    ("Rossler", exp_hexes["ross"]),
     ("Kalman", params_kalman),
     ("TV", params_tv),
     ("SavGol", params_savgol),
-    style="training",
-    shape=(3, 1),
-)
-
-# %%
-plots.plot_summary_test_train(
-    [*exp_hexes.items()],
-    [("Kalman", params_kalman), ("TV", params_tv), ("SavGol", params_savgol)],
     style="test",
+    shape=(3, 1),
 )
 
 # %%
