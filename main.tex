@@ -13,24 +13,24 @@
 \newcommand{\R}[1]{\mathbb{R}^{#1}}
 \bibliographystyle{unsrtnat}
 \title{Learning Nonlinear Dynamics Using Kalman Smoothing}
-\author{jmsh}
-\date{October 2023}
+\author{Jake Stevens-Haas$^*$, J. Nathan Kutz$^{*,\dag}$, Aleksander Aravkin$^*$\\
+{\small $^*$Department of Applied Mathematics, University of Washington, Seattle, WA} \\
+{\small $^\dag$ Department of Electrical and Computer Engineering, University of Washington, Seattle, WA} }\date{October 2023}
 
 \begin{document}
 
 \maketitle
 
 \abstract{Identifying Ordinary Differential Equations (ODEs) from measurement data requires both fitting the dynamics and assimilating, either implicitly or explicitly, the measurement data.
-The Sparse Identification of Nonlinear Dynamics (SINDy) method thus involves a derivative estimation (and optionally, smoothing) step and a sparse regression on a library of candidate ODE terms.
+The Sparse Identification of Nonlinear Dynamics (SINDy) method involves a derivative estimation step (and optionally, smoothing) and a sparse regression on a library of candidate ODE terms.
 Kalman smoothing is a classical framework for assimilating the measurement data whose noise behavior is well understood.
 Previously, derivatives in SINDy and its python package, pysindy, had been estimated by finite difference, L1 total variation minimization, or local filters like Savitsky-Golay.
-However, Kalman discovers ODEs that best recreate the essential dynamics in simulation, and when combined with hyperparameter optimization, requires the least amount of tuning.
+In contrast, Kalman discovers ODEs that best recreate the essential dynamics in simulation, and when combined with hyper-parameter optimization, requires the least amount of tuning.
 We have incorporated Kalman smoothing into the existing pysindy architecture, allowing for rapid adoption of the method.
-Using this standard engineering approach appears to be the most amenable to parameter selection and best at preserving problem structure in the presence of noise.
+Kalman smoothing appears to be the most amenable to parameter selection and best at preserving problem structure in the presence of noise.
 This is demonstrated on a number of dynamical systems.}
 
 \section{Introduction}
-Main or overleaf
 The method of Sparse Identification of Nonlinear Dynamics, or SINDy, seeks to discover a differential equation governing an arbitrary, measured system.
 The method takes as input some coordinate measurements over time, such as angles between molecular bonds \red{(Boninsegna article)} or a spatial field, such as wave heights \red{(Rudy article)}, and returns the best ordinary or partial differential equation (ODE or PDE) from a library.  However, the method struggles to accomodate significant measurement noise.  On the other hand, Kalman theory has a half-century history of assimilating noisy data to smooth a trajectory.  Its noise properties have been well studied. The paper integrates mature, well-established Kalman theory with emerging SINDy technology and generalized cross validation parameter selection.  It finds that the combination is competitive with other combinations of data smoothing and system identification, and has an advantage in preservation of problem structure and ease of parameter selection.
 
