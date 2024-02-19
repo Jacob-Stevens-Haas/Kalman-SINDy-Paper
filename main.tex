@@ -32,8 +32,17 @@ Kalman smoothing appears to be the most amenable to parameter selection and best
 This is demonstrated on a number of dynamical systems.}
 
 \section{Introduction}
-The method of Sparse Identification of Nonlinear Dynamics, or SINDy, seeks to discover a differential equation governing an arbitrary, measured system.
-The method takes as input some coordinate measurements over time, such as angles between molecular bonds \red{(Boninsegna article)} or a spatial field, such as wave heights \red{(Rudy article)}, and returns the best ordinary or partial differential equation (ODE or PDE) from a library.  However, the method struggles to accomodate significant measurement noise.  On the other hand, Kalman theory has a half-century history of assimilating noisy data to smooth a trajectory.  Its noise properties have been well studied. The paper integrates mature, well-established Kalman theory with emerging SINDy technology and generalized cross validation parameter selection.  It finds that the combination is competitive with other combinations of data smoothing and system identification, and has an advantage in preservation of problem structure and ease of parameter selection.
+The method of {\em Sparse Identification of Nonlinear Dynamics} (SINDy)~\cite{Brunton2016,brunton2022data} seeks to discover a differential or partial differential equation governing an arbitrary, temporally measured system.
+The method takes as input some coordinate measurements over time, such as angles between molecular bonds~\cite{Boninsegna2018} or a spatial field, such as wave heights~\cite{Rudy2017}, and returns the best ordinary or partial differential equation (ODE or PDE) from a library of candidate terms.
+However, the method struggles to accommodate significant measurement noise.
+On the other hand, Kalman theory has a half-century history of assimilating measurement noise to smooth a trajectory, with well-studied and rigorously characterized noise properties.
+We integrate the mature and well-established theory of Kalman with the emerging SINDy technology and combine with generalized cross validation parameter selection for systematic practical applications.
+Our Kalman SINDy architecture is shown to be competitive with other combinations of data smoothing and system identification techniques, and has a significant advantage in preservation of problem structure and ease of parameter selection.
+However, the method struggles to accomodate significant measurement noise.
+On the other hand, Kalman theory has a half-century history of assimilating noisy data to smooth a trajectory.
+Its noise properties have been well studied.
+The paper integrates mature, well-established Kalman theory with emerging SINDy technology and generalized cross validation parameter selection.
+It finds that the combination is competitive with other combinations of data smoothing and system identification, and has an advantage in preservation of problem structure and ease of parameter selection.
 
 % \begin{itemize}
 %     \item Model discovery in data science - bring power of kalman here (what about other methods: autoencoders, DMD, Koopman) (what for?) (All of physics specifying relationships among derivatives) (your job is to discovery derivatives, because derivatives give you the models. There's a lot more we can say, study, and understand about a system when we can identify relationships between derivatives.
