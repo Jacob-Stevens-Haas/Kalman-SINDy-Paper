@@ -69,12 +69,13 @@ These methodological innovations are integrated in the open-source PySINDy softw
 Symbolic learning has also been developed, including symbolic learning on graph neural networks~\red{cranmer2019learning,cranmer2020discovering,sanchez2020learning}.
 
 Kalman smoothing, which this paper adds to SINDy, has a long history of assimilating measurement data in time series.
-From its debut in \red{cite Kalman-original... Kalman Bucy too?}, engineering practice and design have used it for control and prediction across the real world, e.g. in radar systems, econometric variables, weather prediction, and more.
+From its debut in From its debut~\cite{kalman, KalBuc}, engineering practice and design have used it for control and prediction across the real world, e.g. in radar systems, econometric variables, weather prediction, and more.
 The family of Kalman methods encompasses both smoothing, after-the-fact techniques, and filtering, real-time updates, that derive from the same assumptions for distributions.
 The Kalman smoother can be considered as a best-fit Euler update, the maximum likelihood estimator of Brownian motion, or as the best linear fit of an unknown system.
-In the simplest invocation, the Kalman estimator's only parameter is the ratio of measurement noise to the process's underlying stochastic noise.
+The best fit/maximum likelihood view extends the classic Kalman updates to a rich family of efficient generalized Kalman smooth algorithms for signals corrupted by outliers, nonlinear models, constraints through side information, and a myriad of other applications~\cite{aravkin2017generalized}.
+In the simplest invocation, the Kalman estimator is determined given only the ratio of measurement noise to the process's underlying stochastic noise.
 Fixing both of these parameters allows Kalman methods to also identify the variance of the associated estimator.
-Furthermore, much work exists to attempt to identify parameters purely from data, such as \red{cite Floris, Boyd/Barrett}.
+Furthermore, much work exists to attempt to identify parameters purely from data, such as \cite{Barratt2020,VanBreugel2020}.
 These methods include their own parameters and are not guaranteed a solution, but are an improvement on the indeterminate nature of direct maximum likelihood or MAP likelihood.
 
 This paper introduces Kalman smoothing as the derivative estimation step in SINDy in distinction with the L1 total variation minimization or Savitsky-Golay smoothers common in application.
@@ -124,15 +125,16 @@ This paper seeks to make SINDy more resilient to noise by taking a data assimila
 
 \subsection{Kalman Smoothing}
 
-Kalman theory is a group of optimal estimation techniques to assimilate measurement noise to a random process.  The theory can be use to filter new measurements in real-time use cases or smooth a complete trajectory of measurements.  While the processes this paper is concerned with are not random, in the first step of SINDy they are unknown, and so probabalistic language is appropriate.
-
+Kalman filtering and smoothing refers to a group of optimal estimation techniques to assimilate measurement noise to a random process.
+Filtering refers to incorporating  new measurements in real-time, while smoothing refers to estimating the underlying state or signal using a complete trajectory of (batch) measurements.
+While the processes this paper is concerned with are not random, in the first step of SINDy they are unknown, and so probabilistic language is appropriate.
 
 In adding Kalman smoothing to SINDy, we introduce a distinction between the measurement variables and the state variables of the dynamical system in equation
 \ref{eqn:sindy_ode}.  As such, the inputs to the problem become $m$ time points of measurements of $k$ variables ($\mat Z\in \R{k\times m}$) and a linear transform from the state to the measurement variables $\mat H \in \R{n \times k}$ describing how the process is measured.
 
 Measurement error is assumed to be normally distributed with $\mat H \mat X - \mat Z \sim \sigma_z \mathcal N(0, \mat R)$ where the covariance matrix $\mat R\in\R{k \times k}$.  Measurement regimes where noise is autocorrelated or varies over time can be accomodated by flattening $\mat H \mat X - \mat Z$ and describing $\mat R\in\R{nk \times nk}$.
 
-Two parameters are required $\sigma_z$, the measurement noise standard deviation, and $\sigma_x$, the process velocity standard deviation per unit time.  If only state estimates, and not variances, are required, it suffices to use the ratio $\rho = (\sigma_z / \sigma_x)^2$.
+Two parameters are required $\sigma_z$, the measurement noise standard deviation, and $\sigma_x$, the process velocity standard deviation per unit time.  If only point estimates of the state, and not variances of those estimates, are required, it suffices to use the ratio $\rho = (\sigma_z / \sigma_x)^2$.
 
 Each process is assumed to have an independent, Brownian velocity.  This leads to Kalman smoothing estimator
 \begin{align}
