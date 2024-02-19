@@ -51,11 +51,13 @@ It finds that the combination is competitive with other combinations of data smo
 %     \item What we do: marriage of kalman + SINDy (figure, hinted at in P1)
 % \end{itemize}
 
-When developing model discovery methods for physical systems, explainability takes on greater importance.
-A method that can identify relationships between coordinates and derivatives supports all the theorems of physics, such as spectral analysis, local and global stability, and variable time-stepping.
-While other time-series data science techniques have emerged such as dynamic mode decomposition, recurrent neural nets, and autoencoders, such methods do not seek to search a differentiable function space.
-Physics-Informed Neural Networks (PINNs), for example, add a regularization terms to a time-stepping neural network based upon a PDE of known coefficents, as in \cite{Raissi2019}.
-Few tools exist to analyze the discovered models' global or local properties other than exhaustive simulation.
+Model discovery methods are emerging as a critical component in data-driven engineering design and scientific discovery.
+Enabled by advancements in computational power, optimization schemes, and machine learning algorithms, such techniques are revolutionizing what can be achieved from sensor measurements deployed in a given system.
+Of interest here is the discovery of dynamic models, which can be constructed from a diversity of techniques, including simple regression techniques such as the {\em dynamic mode decomposition} (DMD)~\cite{kutz2016dynamic,ichinaga2024pydmd} to neural networks such as {\em physics-informed neural networks} (PINNs)~\cite{Raissi2019}.
+In such models, the objective is to construct a proxy model for the observed measurements which an be used to characterize and reconstruct solutions.
+While DMD provides an interpretable model in terms of a modal decomposition, most neural network architectures remain black-box without a clear view of the underlying dynamical processes.
+Although the number of techniques available are beyond the scope of this paper to review~\cite{cuomo2022scientific}, SINDy is perhaps the leading data-driven model discovery method for interpretable and/or explainable dynamic models as it looks to infer the governing equations underlying the observed data.
+As such, it looks to construct a model in terms of relationships between spatial and/or temporal derivatives, which is the underlying mathematical representation of physics and engineering based systems since the time of Newton.
 
 SINDy does seek to establish relationships between derivatives.
 Emerging from \red{cite original paper}, all variants aim to discover a sparse symbolic representation of an autonomous or controlled system, $\dot x = f(x)$.
