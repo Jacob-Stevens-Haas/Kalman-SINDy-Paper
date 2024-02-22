@@ -91,7 +91,7 @@ Section two describes the individual methods of SINDy and Kalman smoothing, prov
 \subsection{SINDy}
 SINDy \cite{Brunton2016} is a family of emerging methods for discovering the underlying dynamics of a system governed by unknown or partially-known \cite{Champion2020} differential equations.  It can handle ODEs as well as PDEs \cite{Rudy2017}, and has been used for protein folding \cite{Boninsegna2018}, chemical reaction networks \cite{Hoffmann2019}, plasma physics \cite{Guan2021}, and more.  Most invocations occur through the pysindy Python package, but innovations such as Langevin Regression \cite{Callaham2021} or \cite{Rudy2019} exist as independent code.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \label{fig:sindy}
     \centering
     \includegraphics[width=.5\textwidth]{images/explain_sindy}
@@ -187,7 +187,7 @@ In a desire to make the experiments not just reproducible, but also customizable
 
 Within \gray{pysindy}, we redefined ensembling in a more flexible way to apply to a greater variety of underlying optimizers, such as the MIOSR one used in these experiments.  The standardization of interfaces allows us to compose SINDy experiments in the \red{Add pysindy-experiments} package.  It allows a standard API to specify data generation, model building, and evaluation.  Beyond the experiments in this paper, we've added PDE experiments as well.  As a consequence, we were not able to compare with the integral-based methods of \cite{messenger2021bweak}, whose equivalent in \gray{pysindy} does not allow simulation, or \cite{Hirsh2022}, which has not been built into \gray{pysindy}.
 
-Finally, in order to make it easier to collaborate and reproduce experiments, we expanded the \gray{mitosis} package developed in \cite{Stevens-Haas2021}.  This allows specifying experiment parameters and groups in a declarative manner, which leads to more readable diffs.  It also pins reproducibility information for any experiment run.  The command line syntax for the experiments in this paper, as well as the full environment git hashes and package versions, are in Appendix B
+Finally, in order to make it easier to collaborate and reproduce experiments, we expanded the \gray{mitosis} package developed in \cite{Stevens-Haas2022}.  This allows specifying experiment parameters and groups in a declarative manner, which leads to more readable diffs.  It also pins reproducibility information for any experiment run.  The command line syntax for the experiments in this paper, as well as the full environment git hashes and package versions, are in Appendix B
 
 \subsection{Results}
 
@@ -263,7 +263,7 @@ Kalman SINDy could also be more directly compared to Weak SINDy, which aims at t
 Oh wait, did I forget to mention that KS has a natural connection between
 
 \section*{Appendix}
-\begin{table}[h]
+\begin{table}[ht]
     \centering
     \label{tab:ODEs}
     \begin{tabular}{c c c}

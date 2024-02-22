@@ -59,7 +59,7 @@
 }
 @inproceedings{Long2018,
    author = {Zichao Long and Yiping Lu and Xianzhong Ma and Bin Dong},
-   publisher = {Proceedings of the International Conference on Machine Learning},
+   booktitle = {Proceedings of the International Conference on Machine Learning},
    title = {PDE-Net: Learning PDEs from Data},
    year = {2018},
 }
@@ -359,13 +359,14 @@
    url = {https://github.com/williamgilpin/dysts},
    year = {2023},
 }
-@preprint{Stevens-Haas2021,
-   author = {Jacob Stevens-Haas and Sarah E. Webster and Aleksandr Aravkin},
-   doi = {10.48550/arxiv.2110.10199},
-   month = {10},
-   title = {Theoretical Advances in Current Estimation and Navigation from a Glider-Based Acoustic Doppler Current Profiler (ADCP)},
-   url = {https://arxiv.org/abs/2110.10199v2},
-   year = {2021},
+@misc{Stevens-Haas2022,
+      title={Theoretical Advances in Current Estimation and Navigation from a Glider-Based Acoustic Doppler Current Profiler (ADCP)},
+      author={Jacob Stevens-Haas and Sarah E. Webster and Aleksandr Aravkin},
+      year={2022},
+      month={10},
+      eprint={2110.10199},
+      archivePrefix={arXiv},
+      primaryClass={math.OC}
 }
 @article{Kaptanoglu2023weak,
    abstract = {Sparse system identification is the data-driven process of obtaining parsimonious differential equations that describe the evolution of a dynamical system, balancing model complexity and accuracy. There has been rapid innovation in system identification across scientific domains, but there remains a gap in the literature for large-scale methodological comparisons that are evaluated on a variety of dynamical systems. In this work, we systematically benchmark sparse regression variants by utilizing the dysts standardized database of chaotic systems. In particular, we demonstrate how this open-source tool can be used to quantitatively compare different methods of system identification. To illustrate how this benchmark can be utilized, we perform a large comparison of four algorithms for solving the sparse identification of nonlinear dynamics (SINDy) optimization problem, finding strong performance of the original algorithm and a recent mixed-integer discrete algorithm. In all cases, we used ensembling to improve the noise robustness of SINDy and provide statistical comparisons. In addition, we show very compelling evidence that the weak SINDy formulation provides significant improvements over the traditional method, even on clean data. Lastly, we investigate how Pareto-optimal models generated from SINDy algorithms depend on the properties of the equations, finding that the performance shows no significant dependence on a set of dynamical properties that quantify the amount of chaos, scale separation, degree of nonlinearity, and the syntactic complexity.},
