@@ -8,12 +8,14 @@
 \usepackage{graphicx}
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\gray}[1]{\textcolor{gray}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
 \newcommand{\mat}[1]{\boldsymbol{\mathsf{#1}}}
 \renewcommand{\vec}[1]{\boldsymbol{\mathrm{#1}}}
 \newcommand{\R}[1]{\mathbb{R}^{#1}}
 \bibliographystyle{unsrtnat}
 \title{Learning Nonlinear Dynamics Using Kalman Smoothing}
-\author{Jake Stevens-Haas$^*$, J. Nathan Kutz$^{*,\dag}$, Aleksander Aravkin$^*$\\
+\author{Jake Stevens-Haas$^*$, J. Nathan Kutz$^{*,\dag}$, Aleksander Aravkin$^*$, Yash Bhangale$^*$\\
 {\small $^*$Department of Applied Mathematics, University of Washington, Seattle, WA} \\
 {\small $^\dag$ Department of Electrical and Computer Engineering, University of Washington, Seattle, WA} }
 \date{\today}
@@ -69,7 +71,7 @@ These methodological innovations are integrated in the open-source PySINDy softw
 Symbolic learning has also been developed, including symbolic learning on graph neural networks~\red{cranmer2019learning,cranmer2020discovering,sanchez2020learning}.
 
 Kalman smoothing, which this paper adds to SINDy, has a long history of assimilating measurement data in time series.
-From its debut in From its debut~\cite{kalman, KalBuc}, engineering practice and design have used it for control and prediction across the real world, e.g. in radar systems, econometric variables, weather prediction, and more.
+From its debut in~\cite{kalman, KalBuc}, engineering practice and design have used it for control and prediction across the real world, e.g. in radar systems, econometric variables, weather prediction, and more.
 The family of Kalman methods encompasses both smoothing, after-the-fact techniques, and filtering, real-time updates, that derive from the same assumptions for distributions.
 The Kalman smoother can be considered as a best-fit Euler update, the maximum likelihood estimator of Brownian motion, or as the best linear fit of an unknown system.
 The best fit/maximum likelihood view extends the classic Kalman updates to a rich family of efficient generalized Kalman smooth algorithms for signals corrupted by outliers, nonlinear models, constraints through side information, and a myriad of other applications~\cite{aravkin2017generalized}.
