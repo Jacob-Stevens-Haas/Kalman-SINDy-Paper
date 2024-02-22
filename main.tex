@@ -143,18 +143,30 @@ Measurement error is assumed to be normally distributed with $\mat H \mat X - \m
 
 Two parameters are required $\sigma_z$, the measurement noise standard deviation, and $\sigma_x$, the process velocity standard deviation per unit time.  If only point estimates of the state, and not variances of those estimates, are required, it suffices to use the ratio $\rho = (\sigma_z / \sigma_x)^2$.
 
-Each process is assumed to have an independent, Brownian velocity.  This leads to Kalman smoothing estimator
+\begin{figure}
+    \label{fig:kalman}
+    \centering
+    \includegraphics[width=\textwidth]{images/static/kalman_fit_demo2.png}
+    \caption{Explanatory depiction of Kalman filtering.
+    A previous iteration gives a distribution $p(x_{i-1},\dot x_{i-1})$.
+    Multiplication by an update matrix produces the predictions $p(x_i, \dot x_i|x_{i-1}, \dot x_{i-1})$.
+    Simultaneously, measurements $z_i$ are taken that, with known measurement noise, give $p(z_i|x_i)$.
+    Multiplication gives the joint distribution $p(x_i, \dot x_i, z_i| x_{i-1}, \dot x_{i-1})$, from which the conditional distribution $p(x_i, \dot x_i|z_i, x_{i-1}, \dot x_{i-1})$ can be calculated, shown in \cite{Eaton2007}}
+\end{figure}
+
+
+Each process is assumed to have an independent, Brownian velocity.  This leads to Kalman smoothing estimator:
 \begin{align}
     \underset{X, \dot X}{\arg\min}{\|\mat H \mat X - \mat Z\|_{\mat R^{-1}}}^2 + \rho {\|\mat G [\mat {\dot X}, \mat X]\|_{\mat Q^{-1}}}^2
 \end{align}
-Here, $\mat G$ is a linear transform to separate $[\mat{\dot X}, \mat X]$ into independent, mean-zero increments, and $\mat Q$ is the covariance of the Brownian process velocity $\mat{\dot X}$ and its integral, $\mat X$ over the increments.
+Here, $\mat G$ is a linear transform to separate $[\mat{\dot X}, \mat X]$ into independent, mean-zero increments, and $\mat Q$ is the covariance of the Brownian process velocity $\mat{\dot X}$ and its integral, $\mat X$ over the increments.  A graphic displaying Kalman filtering is shown in Figure \ref{fig:kalman}.  Although this paper uses global smoothing, the equivalent step-by-step approach of filtering is more amenable to graphics
 
 In practice, rather than choosing $\rho$, this paper uses the generalized cross validation of \cite{Barratt2020} to choose $\rho$.  It chooses $\rho$ in order to minimize the loss on a witheld set of data.  While the algorithm described in that paper is not guaranteed to find a minimum, heuristic experience has shown that the longer the trajectory, the more likely their algorithm will succeed.  As the experiments in the next section use simulated data, this limitation is acceptable.
 
+The generalized cross validation approach of \cite{Barratt2020} witholds some measurement points in order to find the values of $\mat H, \mat R, \mat G,$ and $\mat Q$ that produce estimates $\hat{\mat X}$ that fit witheld data most accurately.  This powerful approach can apply to all linear systems but comes with the burdens of nonconvexity.  In our work, we presume to know the measurement parameters and most of the process parameters - after all, "position is the integral of velocity", implies certain constraints on $\mat G$ and $\mat Q$.  The method accomodates these constraints via specification of a prox function.
+
 \begin{itemize}
-    \item Figure: Graphics of SINDy
-    \item Figure: graphics of kalman smoothing
-    \item Anything on existing Kalman System Identification?
+    \item \blue{Anything on existing Kalman System Identification?}
 \end{itemize}
 
 \section{Experiments}
