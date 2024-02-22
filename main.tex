@@ -8,12 +8,14 @@
 \usepackage{graphicx}
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\gray}[1]{\textcolor{gray}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
 \newcommand{\mat}[1]{\boldsymbol{\mathsf{#1}}}
 \renewcommand{\vec}[1]{\boldsymbol{\mathrm{#1}}}
 \newcommand{\R}[1]{\mathbb{R}^{#1}}
 \bibliographystyle{unsrtnat}
 \title{Learning Nonlinear Dynamics Using Kalman Smoothing}
-\author{Jake Stevens-Haas$^*$, J. Nathan Kutz$^{*,\dag}$, Aleksandr Aravkin$^*$\\
+\author{Jake Stevens-Haas$^*$, J. Nathan Kutz$^{*,\dag}$, Aleksandr Aravkin$^*$, Yash Bhangale$^*$\\
 {\small $^*$Department of Applied Mathematics, University of Washington, Seattle, WA} \\
 {\small $^\dag$ Department of Electrical and Computer Engineering, University of Washington, Seattle, WA} }
 \date{\today}
@@ -69,7 +71,7 @@ These methodological innovations are integrated in the open-source PySINDy softw
 Symbolic learning has also been developed, including symbolic learning on graph neural networks~\red{cranmer2019learning,cranmer2020discovering,sanchez2020learning}.
 
 Kalman smoothing, which this paper adds to SINDy, has a long history of assimilating measurement data in time series.
-From its debut in From its debut~\cite{kalman, KalBuc}, engineering practice and design have used it for control and prediction across the real world, e.g. in radar systems, econometric variables, weather prediction, and more.
+From its debut in~\cite{kalman, KalBuc}, engineering practice and design have used it for control and prediction across the real world, e.g. in radar systems, econometric variables, weather prediction, and more.
 The family of Kalman methods encompasses both smoothing, after-the-fact techniques, and filtering, real-time updates, that derive from the same assumptions for distributions.
 The Kalman smoother can be considered as a best-fit Euler update, the maximum likelihood estimator of Brownian motion, or as the best linear fit of an unknown system.
 The best fit/maximum likelihood view extends the classic Kalman updates to a rich family of efficient generalized Kalman smooth algorithms for signals corrupted by outliers, nonlinear models, constraints through side information, and a myriad of other applications~\cite{aravkin2017generalized}.
@@ -87,10 +89,13 @@ Section two describes the individual methods of SINDy and Kalman smoothing, prov
 \section{Background}
 
 \subsection{SINDy}
-SINDy \cite{Brunton2016} is a family of emerging methods for discovering the underlying dynamics of a system governed by unknown or partially-known \cite{Champion2020} differential equations.  It can handle PDEs as well as PDEs \cite{Rudy2017}, and has been used for protein folding \cite{Boninsegna2018}, chemical reaction networks \cite{Hoffmann2019}, plasma physics \cite{Guan2021}, and more.  Most invocations occur through the pysindy Python package, but innovations such as Langevin Regression \cite{Callaham2021} or \cite{Rudy2019} exist as independent code.
+SINDy \cite{Brunton2016} is a family of emerging methods for discovering the underlying dynamics of a system governed by unknown or partially-known \cite{Champion2020} differential equations.  It can handle ODEs as well as PDEs \cite{Rudy2017}, and has been used for protein folding \cite{Boninsegna2018}, chemical reaction networks \cite{Hoffmann2019}, plasma physics \cite{Guan2021}, and more.  Most invocations occur through the pysindy Python package, but innovations such as Langevin Regression \cite{Callaham2021} or \cite{Rudy2019} exist as independent code.
 
-\begin{figure}
-    \includegraphics{images/explain_sindy}
+\begin{figure}[ht]
+    \label{fig:sindy}
+    \centering
+    \includegraphics[width=.5\textwidth]{images/explain_sindy}
+    \caption{SINDYYYYYYYYYYYYYYY}
 \end{figure}
 
 
@@ -107,7 +112,7 @@ To amplify:
     &\mat \Theta(X) \in \R{p \times m}\text{: library of $p$ functions evaluated at $m$ timepoints}\\
     &\mat \Xi \in \R{n \times p}\text{: coefficients for $n$ equations of $p$ functions}
 \end{align*}
-The function library written as a time-independent quantity refers to the collection $\mat \Theta = [\theta_1, \dots \theta_p]^T$, where $\theta_i: \R{n}\rightarrow\R{}$. Examples include the family of all degree-2 polynomials of $n$ inputs, mixed sines and cosines of certain requencies, or any user-specified family.
+The function library written as a time-independent quantity refers to the collection $\mat \Theta = [\theta_1, \dots \theta_p]^T$, where $\theta_i: \R{n}\rightarrow\R{}$. Examples include the family of all degree-2 polynomials of $n$ inputs, mixed sines and cosines of certain frequencies, or any user-specified family.
 
 The method generally proceeds in two steps:
 
@@ -115,11 +120,13 @@ The method generally proceeds in two steps:
     \item Estimate the time derivatives of the system ${\mat{\widehat{\dot X}}} = G(\mat X)$ for some smoothing function $G$
     \item Choosing a sparse regression method, solve the problem $\underset{\text{sparse } \mat \Xi}{\arg\min} \left\| \mat{\widehat{\dot{X}}} - \mat \Xi \mat \Theta(\mat X) \right\|^2$
 \end{enumerate}
-Different methods exist for applying sparsity including sequentially thresholding linear regression, a direct L-0 penalty \cite{Champion2020}, an L-0 constraint \cite{Bertsimas2022}, and bayesian methods that include an explicit regularizer and provide a distribution like spike-slab or regularized horseshoe priors \cite{Hirsh2022,gao2022bayesian}.  A trade-off SINDy faces is that while sparse regression techniques work better with orthogonal basis functions, ODE for most physical systems have terms that are not orthogonal, e.g. the Lorenz system.
+This general process is sketched out in Figure \ref{fig:sindy}.  Researchers have tried a few different methods for calculating the derivatives, broadly grouped into  global methods (e.g. L-1 total variation minimization of \cite{Chartrand2011}) and local methods (e.g. Savitsky-Golay smoothing).  Different ways of applying sparsity has attracted more attention, including sequentially thresholding linear regression, a direct L-0 penalty \cite{Champion2020}, an L-0 constraint \cite{Bertsimas2023}, and bayesian methods for a prior distribution such as spike-slab or regularized horseshoe priors \cite{Hirsh2022,gao2022bayesian}.  Those two papers also demonstrate an interesting line of innovation, eschewing derivatives and using the integral of function library in the loss term.  A related approach instead uses the weak form of the differential equation, yielding a solution that {\it is} convex, but which does not provide as straightforwards an interpretation of the measurement noise. \blue{Verify this}  Most of these methods can benefit from ensembling the data and library terms, as in \cite{Fasel2022}, but others, such as \cite{Kaptanoglu2021} for identifying Galerkin modes of globally stable fluid flows, require a specific form of function library.
+
+% A trade-off SINDy faces is that while sparse regression techniques work better with orthogonal basis functions, ODE for most physical systems have terms that are not orthogonal, e.g. the Lorenz system.
 
 This paper seeks to make SINDy more resilient to noise by taking a data assimilation approach.  It instead presents the Kalman SINDy steps
 \begin{enumerate}
-    \item Estimate the state and time derivatives of the system ${\mat{\widehat{\dot X}}}, \mat{\widehat X} = G(\mat X)$ where $G$ uses Kalman smoothing
+    \item Estimate the state and time derivatives of the system ${\mat{\widehat{\dot X}}}, \mat{\widehat X} = G(\mat X)$ where $G$ applies Kalman smoothing
     \item Choosing a sparse regression method, solve the problem $\underset{\text{sparse } \mat \Xi}{\arg\min} \left\| \mat{\widehat{\dot{X}}} - \mat \Xi \mat \Theta(\mat {\widehat X}) \right\|^2$
 \end{enumerate}
 
@@ -136,32 +143,56 @@ Measurement error is assumed to be normally distributed with $\mat H \mat X - \m
 
 Two parameters are required $\sigma_z$, the measurement noise standard deviation, and $\sigma_x$, the process velocity standard deviation per unit time.  If only point estimates of the state, and not variances of those estimates, are required, it suffices to use the ratio $\rho = (\sigma_z / \sigma_x)^2$.
 
-Each process is assumed to have an independent, Brownian velocity.  This leads to Kalman smoothing estimator
+\begin{figure}
+    \label{fig:kalman}
+    \centering
+    \includegraphics[width=\textwidth]{images/static/kalman_fit_demo2.png}
+    \caption{Explanatory depiction of Kalman filtering.
+    A previous iteration gives a distribution $p(x_{i-1},\dot x_{i-1})$.
+    Multiplication by an update matrix produces the predictions $p(x_i, \dot x_i|x_{i-1}, \dot x_{i-1})$.
+    Simultaneously, measurements $z_i$ are taken that, with known measurement noise, give $p(z_i|x_i)$.
+    Multiplication gives the joint distribution $p(x_i, \dot x_i, z_i| x_{i-1}, \dot x_{i-1})$, from which the conditional distribution $p(x_i, \dot x_i|z_i, x_{i-1}, \dot x_{i-1})$ can be calculated, shown in \cite{Eaton2007}}
+\end{figure}
+
+
+Each process is assumed to have an independent, Brownian velocity.  This leads to Kalman smoothing estimator:
 \begin{align}
     \underset{X, \dot X}{\arg\min}{\|\mat H \mat X - \mat Z\|_{\mat R^{-1}}}^2 + \rho {\|\mat G [\mat {\dot X}, \mat X]\|_{\mat Q^{-1}}}^2
 \end{align}
-Here, $\mat G$ is a linear transform to separate $[\mat{\dot X}, \mat X]$ into independent, mean-zero increments, and $\mat Q$ is the covariance of the Brownian process velocity $\mat{\dot X}$ and its integral, $\mat X$ over the increments.
+Here, $\mat G$ is a linear transform to separate $[\mat{\dot X}, \mat X]$ into independent, mean-zero increments, and $\mat Q$ is the covariance of the Brownian process velocity $\mat{\dot X}$ and its integral, $\mat X$ over the increments.  A graphic displaying Kalman filtering is shown in Figure \ref{fig:kalman}.  Although this paper uses global smoothing, the equivalent step-by-step approach of filtering is more amenable to graphics
 
 In practice, rather than choosing $\rho$, this paper uses the generalized cross validation of \cite{Barratt2020} to choose $\rho$.  It chooses $\rho$ in order to minimize the loss on a witheld set of data.  While the algorithm described in that paper is not guaranteed to find a minimum, heuristic experience has shown that the longer the trajectory, the more likely their algorithm will succeed.  As the experiments in the next section use simulated data, this limitation is acceptable.
 
+The generalized cross validation approach of \cite{Barratt2020} witholds some measurement points in order to find the values of $\mat H, \mat R, \mat G,$ and $\mat Q$ that produce estimates $\hat{\mat X}$ that fit witheld data most accurately.  This powerful approach can apply to all linear systems but comes with the burdens of nonconvexity.  In our work, we presume to know the measurement parameters and most of the process parameters - after all, "position is the integral of velocity", implies certain constraints on $\mat G$ and $\mat Q$.  The method accomodates these constraints via specification of a prox function.
+
 \begin{itemize}
-    \item Figure: Graphics of SINDy
-    \item Figure: graphics of kalman smoothing
-    \item Anything on existing Kalman System Identification?
+    \item \blue{Anything on existing Kalman System Identification?}
 \end{itemize}
 
 \section{Experiments}
 
-Seven canonical dynamical systems have been simulated, comparing the results of SINDy with Kalman smoothing and the hyperparameter optimization of \cite{Barratt2020} in comparison with alternative smoothing methods: L-1 total variation minimization and Savitsky-Golay.  The latter smoothing methods have been modified to pass the not just the smoothed derivatives $\mat{\widehat{\dot X}}$, but also the smoothed position estimates $\mat {\widehat X}$ to the second step of SINDy.  This is to allow direct comparison of the methods themselves and remove idiosyncracies of their implementations in the derivative package.  They also each require a parameter: TV requires a coefficient for the L-1 regularizer and Savitsky-Golay requires a smoothing window.  These are gridsearched over a wide range, although it is worth noting that choosing the gridsearched optimum requires knowledge of the true system, in distinction to the method used for Kalman smoothing.  The authors have edited the pysindy and derivative packages to enable Kalman smoothing and hyperparameter optimizations.
+We seek to evaluate the value of Kalman smoothing as a step in SINDy in comparison to other noise-mitigation innovations.  We simulate seven canonical dynamical systems with noisy measurements across a variety of initial conditions, discovering ODEs from SINDy approaches with different smoothing methods.  To compare the methods, we then integrate the discovered equations and observe how well they preserve the system's structure as well as directly comparing the coefficients through the F1 score and mean absolute error (MAE).
 
-The authors utilize an ensemble optimizer for SINDy, pioneered in \cite{Fasel2022} to bag both library terms and data points \blue{is this true?}.  The inner optimizer is MIOSR, published in \cite{Bertsimas2022} with the correct number of terms specified a priori.  Presenting SINDy with the known number of nonzero coefficients is an attempt to present a best case, where we can ameliorate any interaction between the smoothing method and sparse optimizer caused by optimizer parameters.
+We compare the results of SINDy with Kalman smoothing and the hyperparameter optimization of \cite{Barratt2020} in comparison with alternative smoothing methods: L-1 total variation minimization and Savitsky-Golay.  The latter smoothing methods have been modified to pass the not just the smoothed derivatives $\mat{\widehat{\dot X}}$, but also the smoothed position estimates $\mat {\widehat X}$ to the second step of SINDy.  They also each require a parameter: TV requires a coefficient for the L-1 regularizer and Savitsky-Golay requires a smoothing window.  These are gridsearched over a wide range, although it is worth noting that choosing the gridsearched optimum requires knowledge of the true system, in distinction to the method used for Kalman smoothing.
+
+Beyond the differentiation step, the SINDy models also specify a function library and optimizer.  The feature library used for all experiments was cubic polynomials, including mixed terms and a constant term.  The optimizer was the mixed-integer SINDy optimizer of \cite{Bertsimas2023}, configured with the correct number of nonzero terms a priori, and ensembled over 20 models each trained on 60\% of the data.  Presenting SINDy with the known number of nonzero coefficients is an attempt to present a best case, where we can ameliorate any interaction between the smoothing method and sparse optimizer caused by optimizer parameters.  A full list of ODE, simulation, and exeperimental parameters are shown in Appendix A, tables \ref{tab:ODEs} and \ref{tab:exp-params}.
 
 Methods can be compared in several ways: by the coefficients of the equations they discover, by their accuracy in forecasting derivatives, and how well the discovered system recreates observed dynamics in simulation.  As \cite{Gilpin2023} (\blue{probably}) notes,  metrics for dynamical system discovery are less universally understandable.  The merit of a metric depends upon both the use case and whether the trajectory considered is one of importance.  For instance, in controls engineering, the local derivative and very short-term forecasting is the primary imperative.  On the other hand, for reduced-order PDE models, recreating larger-scale phenomena in simulation may be more important.  Finally, in high-dimensional network dynamics, the accuracy of identifying connectivity, as measured by coefficient F1 score, is most important.
 
-\begin{table}
-    \label{tab:parameterization}
-\end{table}
-As the coefficient metrics are the most straightforwards, and we compare methods by F1 score and Mean Absolute Error.  We also compare predictive and simulated accuracy over a test set with the same distributional parameters as the training set.  Experiment parameterization is displayed in table \ref{tab:parameterization}.  Table \ref{tab:results} shows the results on all metrics to compare smoothing methods across all ODEs.
+As the coefficient metrics are the most straightforwards, and we compare methods by F1 score and Mean Absolute Error as the duration of training data increases, and separately, as the measurement noise increases.  We also visually evaluate how well the discovered ODEs, simulated from random initial conditions in a test set, track the true data and display relevant behavior.
+
+\subsection{Running Experiments}
+
+In a desire to make the experiments not just reproducible, but also customizable,extensible, and composable, we have separated the method, experiment, and experiment runner into separate packages.  Methodological improvements include adding Kalman smoothing and a entry point for hyperparameter optimization to the \gray{derivative} package, as well as an API for returning not just the derivatives, but the smoothed coordinates themselves (employed for Kalman and Total Variation).  It is used in \gray{pysindy}, where we enabled incorporating the smoothed coordinates into successive problem steps.  It should be noted that previous experiments using \gray{pysindy}'s derivative estimation would re-use the noisy coordinates in function library evaluation.  We also enabled a plugin for hyperparameter estimation, which is how this paper incorporates the package of \cite{Barratt2020}
+
+Within \gray{pysindy}, we redefined ensembling in a more flexible way to apply to a greater variety of underlying optimizers, such as the MIOSR one used in these experiments.  The standardization of interfaces allows us to compose SINDy experiments in the \red{Add pysindy-experiments} package.  It allows a standard API to specify data generation, model building, and evaluation.  Beyond the experiments in this paper, we've added PDE experiments as well.  As a consequence, we were not able to compare with the integral-based methods of \cite{messenger2021bweak}, whose equivalent in \gray{pysindy} does not allow simulation, or \cite{Hirsh2022}, which has not been built into \gray{pysindy}.
+
+Finally, in order to make it easier to collaborate and reproduce experiments, we expanded the \gray{mitosis} package developed in \cite{Stevens-Haas2022}.  This allows specifying experiment parameters and groups in a declarative manner, which leads to more readable diffs.  It also pins reproducibility information for any experiment run.  The command line syntax for the experiments in this paper, as well as the full environment git hashes and package versions, are in Appendix B
+
+\subsection{Results}
+
+Table \ref{tab:results} shows the results on all metrics to compare smoothing methods across all ODEs. \green{TBD}
+
 \begin{table}
     \label{tab:results}
 \end{table}
@@ -171,12 +202,19 @@ As the coefficient metrics are the most straightforwards, and we compare methods
     \includegraphics[width=\textwidth]{images/summary_train}
 \end{figure}
 \begin{figure}
+    \label{fig:train}
+    \includegraphics[width=\textwidth]{images/summary_train}
+\end{figure}
+\begin{figure}
+    \label{fig:test}
     \includegraphics[width=\textwidth]{images/summary_test}
 \end{figure}
 \begin{figure}
+    \label{fig:f1}
     \includegraphics[width=\textwidth]{images/summary_f1}
 \end{figure}
 \begin{figure}
+    \label{fig:mae}
     \includegraphics[width=\textwidth]{images/summary_mae}
 \end{figure}
 % Methods:
@@ -214,6 +252,7 @@ As the coefficient metrics are the most straightforwards, and we compare methods
 % % \subsection{Model Predictive Control}
 % % \textcolor{red}{Lorenz stabilization, learn from E-SINDy paper}
 \section{Conclusion}
+\green{TBD}
 This paper has demonstrated that Kalman smoothing is a useful addition to SINDy.  By incorporating hyperparameter optimization, it makes the method more generally applicable across domains. The Kalman smoother behaves optimally for the simplest systems and provides a familiar process to the controls engineering community, even if it is not a mathematically unique innovation.  It also appears to perform better at preserving global system structure in simulation.
 
 <More specific experimental results summary>
@@ -225,6 +264,60 @@ Currently, the hyperparameter optimization has no access to the terms in the SIN
 Kalman SINDy could also be more directly compared to Weak SINDy, which aims at the same goal of reducing the sensitivity to noise.
 
 Oh wait, did I forget to mention that KS has a natural connection between
+
+\section*{Appendix}
+\begin{table}[ht]
+    \centering
+    \label{tab:ODEs}
+    \begin{tabular}{c c c}
+        System & ODE & Experiment parameters\\
+        \hline\hline
+        Linear Damped Oscillator
+            & $\dot {\vec x} = \left[\begin{matrix}-\alpha & \beta \\ -\beta & -\alpha\end{matrix}\right] \vec x$
+            & $\alpha = .1$, $\beta=2 $\\\\
+        Cubic Damped Oscillator
+            & $\dot {\vec x} = \left[\begin{matrix}-\alpha & \beta \\ -\beta & -\alpha\end{matrix}\right] \left[\begin{matrix}x_1^3\\x_2^3\end{matrix}\right]$
+            & $\alpha = .1$, $\beta=2 $\\\\
+        Duffing
+            & $\dot {\vec x} = \left[\begin{matrix}x_2 \\ -\alpha x_2 - \beta x_1 -\gamma x_1^3\end{matrix}\right]$
+            & $\alpha = .2$, $\beta=.05 $, $\gamma=1$\\\\
+        Hopf
+            & $\dot {\vec x} = \left[\begin{matrix}
+                -\alpha x_1 -\beta x_2 - \gamma x_1(x_1 ^2 + x_2^2) \\
+                \beta x_1 - \alpha x_2 -\gamma x_2(x_1 ^2 + x_2^2)
+            \end{matrix}\right]$
+            & $\alpha = .05$, $\beta=1 $, $\gamma=1$\\\\
+        Lotka-Volterra
+            & $\dot {\vec x} = \left[\begin{matrix}
+                \alpha x_1 - \beta x_1 x_2 \\
+                \beta x_1  x_2 - 2 \alpha x_2
+            \end{matrix}\right]$
+            & $\alpha = TBD$, $\beta=TBD $\\\\
+        Rossler
+            & $\dot {\vec x} = \left[\begin{matrix}
+                -x_2 - x_3 \\
+                x_1 + \alpha x_2\\
+                \beta + (x_1 - \gamma) x_3
+            \end{matrix}\right]$
+            & $\alpha = .2$, $\beta=.2 $, $\gamma=5.7$\\\\
+        Van der Pol Oscillator
+            & $\dot {\vec x} = \left[\begin{matrix}
+                x_2 \\
+                \alpha(1 - x_1^2) x_2 - x_1
+            \end{matrix}\right]$
+        & $\alpha = .5$
+    \end{tabular}
+    \caption{The parametrization of ODEs used in these experiments.  Mostly from defaults in the pysindy package.}
+\end{table}
+
+\begin{table}
+    \label{tab:exp-params}
+    \begin{tabular}{c c c}
+        Parameter & Symbol & value\\
+        \hline
+    \end{tabular}
+\end{table}
+
 
 \bibliography{main}
 \end{document}
