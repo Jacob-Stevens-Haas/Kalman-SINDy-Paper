@@ -191,6 +191,15 @@ Finally, in order to make it easier to collaborate and reproduce experiments, we
 
 \subsection{Results}
 
+We find that SINDy with Kalman smoothing recovers the problem structure in application much better than competing methods.  SINDy with Kalman hyperparameter optimization tends outperform the Savitsky-Golay and Total Variation gridsearched optima, itself \green{(pending results of experiment)} outperformed only slightly by the Kalman gridsearched optima.  While hyperparameter optimization imposes a substantial runtime cost, it does not require access to the true data, making those results all the more inspiring for field use cases.  Simulations of discovered models across all ODEs and methods are shown in figure \ref{fig:test}
+\begin{figure}[h]
+    \label{fig:test}
+    \includegraphics[width=\textwidth]{images/summary_test}
+\end{figure}
+
+Surprisingly, despite performing well in simulation, SINDy with Kalman hyperparameter optimization performs middlingly in the coefficient metrics.  In high-noise cases, it seems to outperform Savitsky Golay in MAE and F1 only slightly more than it underperforms in the other cases.  Meanwhile, Total Variation outperforms both. \green{(pending results of experiment)}  Grid-searched Kalman SINDy
+
+
 Table \ref{tab:results} shows the results on all metrics to compare smoothing methods across all ODEs. \green{TBD}
 
 \begin{table}
@@ -203,16 +212,12 @@ Table \ref{tab:results} shows the results on all metrics to compare smoothing me
     \includegraphics[width=\textwidth]{images/summary_train}
 \end{figure}
 \begin{figure}
-    \label{fig:test}
-    \includegraphics[width=\textwidth]{images/summary_test}
-\end{figure}
-\begin{figure}
     \label{fig:f1}
-    \includegraphics[width=\textwidth]{images/summary_f1}
+    \includegraphics[width=\textwidth]{images/summary_f1_time.png}
 \end{figure}
 \begin{figure}
     \label{fig:mae}
-    \includegraphics[width=\textwidth]{images/summary_mae}
+    \includegraphics[width=\textwidth]{images/summary_mae_time.png}
 \end{figure}
 % Methods:
 % \begin{itemize}
