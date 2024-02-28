@@ -35,7 +35,7 @@ nohup mitosis gen_experiments.gridsearch \
     --param grid_params=duration-absnoise \
     --param grid_vals=duration-absnoise \
     --param grid_decisions=plot2 \
-    --param series_params=kalman-auto3 \
+    --param series_params=multikalman \
     --param +plot_prefs=test-absrel5 \
     --param +skinny_specs=duration-noise &> cubic_ho.log &
 
@@ -61,7 +61,7 @@ nohup mitosis gen_experiments.gridsearch \
     --param grid_params=duration-absnoise \
     --param grid_vals=duration-absnoise \
     --param grid_decisions=plot2 \
-    --param series_params=kalman-auto3 \
+    --param series_params=multikalman \
     --param +plot_prefs=test-absrel5 \
     --param +skinny_specs=duration-noise &> vdp.log &
 
@@ -74,7 +74,7 @@ nohup mitosis gen_experiments.gridsearch \
     --param grid_params=duration-absnoise \
     --param grid_vals=duration-absnoise \
     --param grid_decisions=plot2 \
-    --param series_params=kalman-auto3 \
+    --param series_params=multikalman \
     --param +plot_prefs=test-absrel5 \
     --param +skinny_specs=duration-noise &> lv.log &
 

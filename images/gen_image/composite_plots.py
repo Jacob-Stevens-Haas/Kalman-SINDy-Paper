@@ -41,6 +41,28 @@ plots.plot_summary_metric(
 )
 pass
 # %%
+plots.plot_summary_metric(
+    "coeff_mae",
+    "sim_params.noise_rel",
+    *exp_hexes.items(),
+    shape=(2, 4),
+    title=False,
+    metric_fname=r"$\xi$ MAE",
+    grid_axis_fname="relative noise",
+)
+pass
+# %%
+plots.plot_summary_metric(
+    "coeff_f1",
+    "sim_params.noise_rel",
+    *exp_hexes.items(),
+    shape=(2, 4),
+    title=False,
+    metric_fname=r"$\xi$ F1 score",
+    grid_axis_fname="relative noise",
+)
+pass
+# %%
 
 noise_params = {"sim_params.t_end": 16, "sim_params.noise_abs": 1}
 params_kalman = noise_params | {"diff_params.kind": "kalman"}
