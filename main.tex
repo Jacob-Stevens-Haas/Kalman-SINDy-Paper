@@ -202,6 +202,9 @@ We find that SINDy with Kalman smoothing recovers the problem structure in appli
 Surprisingly, while models derived from Kalman-smoothed data outperform other methods in simulation, the Kalman-smoothed training data itself does not seem as accurate as data smoothed by L-1 Total Variation or Savitsky-Golay.
 
 \begin{figure}
+    \includegraphics[width=\textwidth]{images/summary_train}
+\end{figure}
+\begin{figure}
     \label{fig:train}
     \includegraphics[width=\textwidth]{images/summary_train}
     \caption{The smoothing of training data, performed by different differentiation methods prior to SINDy fit.  It does not appear to be the case that a more visually accurate smoothing yields a model that behaves more correctly in simulation.  For example, the Van der Pol and Rossler systems seem to be best smoothed by total variation.  Nevertheless, as figure \ref{fig:test} shows, Kalman-smoothed trajectories lead to better models in simulation.}
