@@ -9,7 +9,7 @@ nohup mitosis gen_experiments.gridsearch \
     --param grid_params=duration-absnoise \
     --param grid_vals=duration-absnoise \
     --param grid_decisions=plot2 \
-    --param series_params=kalman-auto3 \
+    --param series_params=multikalman \
     --param +plot_prefs=test-absrel5 \
     --param +skinny_specs=duration-noise &> mock.log &
 
@@ -22,7 +22,7 @@ nohup mitosis gen_experiments.gridsearch \
     --param grid_params=duration-absnoise \
     --param grid_vals=duration-absnoise \
     --param grid_decisions=plot2 \
-    --param series_params=kalman-auto3 \
+    --param series_params=multikalman \
     --param +plot_prefs=test-absrel5 \
     --param +skinny_specs=duration-noise &> lorenz.log &
 
@@ -48,7 +48,7 @@ nohup mitosis gen_experiments.gridsearch \
     --param grid_params=duration-absnoise \
     --param grid_vals=duration-absnoise \
     --param grid_decisions=plot2 \
-    --param series_params=kalman-auto3 \
+    --param series_params=multikalman \
     --param +plot_prefs=test-absrel5 \
     --param +skinny_specs=duration-noise &> sho.log &
 
@@ -87,7 +87,7 @@ nohup mitosis gen_experiments.gridsearch \
     --param grid_params=duration-absnoise \
     --param grid_vals=duration-absnoise \
     --param grid_decisions=plot2 \
-    --param series_params=kalman-auto3 \
+    --param series_params=multikalman \
     --param +plot_prefs=test-absrel5 \
     --param +skinny_specs=duration-noise &> duff.log &
 
@@ -100,7 +100,7 @@ nohup mitosis gen_experiments.gridsearch \
     --param grid_params=duration-absnoise \
     --param grid_vals=duration-absnoise \
     --param grid_decisions=plot2 \
-    --param series_params=kalman-auto3 \
+    --param series_params=multikalman \
     --param +plot_prefs=test-absrel5 \
     --param +skinny_specs=duration-noise &> hopf.log &
 
@@ -113,7 +113,7 @@ nohup mitosis gen_experiments.gridsearch \
     --param grid_params=duration-absnoise \
     --param grid_vals=duration-absnoise \
     --param grid_decisions=plot2 \
-    --param series_params=kalman-auto3 \
+    --param series_params=multikalman \
     --param +plot_prefs=test-absrel5 \
     --param +skinny_specs=duration-noise &> ross.log &
 
