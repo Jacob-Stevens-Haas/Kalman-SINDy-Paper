@@ -2,20 +2,20 @@
 from typing import cast
 
 import mitosis
-from gen_experiments.utils import FullSINDyTrialData, strict_find_grid_match
+from gen_experiments.utils import FullSINDyTrialData
 
 import ksindy_figs.data as data
 import ksindy_figs.plotting as plots
 from ksindy_figs.plotting import ExpKey
 
 exp_hexes = {
-    "Cubic HO": ExpKey("0b044c"),
-    "Duffing": ExpKey("b78632"),
-    "Hopf": ExpKey("2255b2"),
-    "Lotka-Volterra": ExpKey("128ce1"),
-    "Rossler": ExpKey("7a3950"),
-    "SHO": ExpKey("04b738"),
-    "Van der Pol": ExpKey("1a23e7"),
+    "Cubic HO": ExpKey("23526c"),
+    "Duffing": ExpKey("23de18"),
+    "Hopf": ExpKey("0b9747"),
+    "Lotka-Volterra": ExpKey("539481"),
+    "Rossler": ExpKey("7b9e27"),
+    "SHO": ExpKey("c5d866"),
+    "Van der Pol": ExpKey("48a935"),
 }
 
 # %%
@@ -64,14 +64,12 @@ plots.plot_summary_metric(
 pass
 # %%
 
-noise_params = {"sim_params.t_end": 16, "sim_params.noise_abs": 1}
-params_kalman = noise_params | {"diff_params.kind": "kalman"}
-params_kalmanauto = noise_params | {"diff_params.kind": "kalman"}
+noise_params = {"sim_params.t_end": 16, "sim_params.noise_rel": 0.1}
+params_kalman = noise_params | {"diff_params.kind": "kalman", "diff_params.alpha": lambda a: isinstance(a, float)}
+params_kalmanauto = noise_params | {"diff_params.kind": "kalman", "diff_params.alpha": lambda a: a is None}
 params_tv = noise_params | {"diff_params.kind": "trend_filtered"}
 params_savgol = noise_params | {"diff_params.diffcls": "SmoothedFiniteDifference"}
 
-if params_kalmanauto==params_kalman:
-    raise ValueError("Cannot distinguish between kalman and kalman auto hyperparameters.")
 # %%
 fig = plots.plot_summary_test_train(
     [*exp_hexes.items()],

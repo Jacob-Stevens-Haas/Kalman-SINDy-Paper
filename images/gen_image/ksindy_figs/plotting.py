@@ -8,13 +8,18 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import mitosis
 import numpy as np
-from gen_experiments.utils import (
+from gen_experiments.gridsearch.typing import (
     GridsearchResult,
     GridsearchResultDetails,
-    SavedData,
-    _amax_to_full_inds,
-    _grid_locator_match,
+    SavedGridPoint,
+    GridLocator
+    # SavedData,
 )
+from gen_experiments.gridsearch import (
+    find_gridpoints,
+    _amax_to_full_inds
+)
+from gen_experiments.config import plot_prefs
 from matplotlib.axes._axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec, SubplotSpec
@@ -326,7 +331,7 @@ def plot_experiment_across_gridpoints(
 
     for cell, (p_name, params) in zip(gs, pargs):
         for trajectory in results["plot_data"]:
-            if _grid_locator_match(
+            if find_gridpoints(
                 trajectory["params"], trajectory["pind"], [params], full_inds
             ):
                 p_names.append(p_name)
@@ -380,10 +385,11 @@ def plot_point_across_experiments(
         results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
         amax_arrays = _argmaxes_from_gsearch(cast(GridsearchResultDetails, results))
         full_inds = _amax_to_full_inds((point,), amax_arrays)
-        for trajectory in results["plot_data"]:
-            if _grid_locator_match(
-                trajectory["params"], trajectory["pind"], [params], full_inds
-            ):
+        locator = GridLocator(params_or=[params])
+        if matches := find_gridpoints(locator, results["plot_data"], results):
+            if len(matches)>1:
+                raise ValueError("More than one matches, unsure what to plot")
+            for trajectory in matches:  
                 ax = _plot_train_test_cell(
                     (fig, cell), trajectory, style=style, annotations=False
                 )
@@ -413,7 +419,7 @@ def _argmaxes_from_gsearch(
 
 def _plot_train_test_cell(
     fig_cell: tuple[Figure, SubplotSpec | int | tuple[int, int, int]],
-    trajectory: SavedData,
+    trajectory: SavedGridPoint,
     *,
     style: str,
     annotations: bool = False,
