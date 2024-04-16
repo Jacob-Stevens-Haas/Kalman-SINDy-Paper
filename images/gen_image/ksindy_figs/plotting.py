@@ -328,21 +328,21 @@ def plot_experiment_across_gridpoints(
     if not indargs:
         indargs = {...}
     full_inds = _amax_to_full_inds(indargs, amax_arrays)
-
     for cell, (p_name, params) in zip(gs, pargs):
-        for trajectory in results["plot_data"]:
-            if find_gridpoints(
-                trajectory["params"], trajectory["pind"], [params], full_inds
-            ):
-                p_names.append(p_name)
+        locator = GridLocator(params_or=[params])
+        if matches:= find_gridpoints(locator, results["plot_data"], results):
+            if len(matches)>1:
+                raise ValueError("More than one matches, unsure what to plot")
+            p_names.append(p_name)
+            for trajectory in results["plot_data"]:
                 ax = _plot_train_test_cell(
                     (fig, cell), trajectory, style=style, annotations=False
                 )
                 if annotations:
                     ax.set_title(p_name)
                 break
-        else:
-            warn(f"Did not find a parameter match for {p_name} experiment")
+            else:
+                warn(f"Did not find a parameter match for {p_name} experiment")
     if annotations:
         ax.legend()
         fig.suptitle(f"ODE: {ode_name}")
