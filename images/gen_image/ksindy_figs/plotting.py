@@ -8,24 +8,19 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import mitosis
 import numpy as np
-from gen_experiments.gridsearch.typing import (
+from gen_experiments.gridsearch import find_gridpoints
+from gen_experiments.gridsearch.typing import (  # SavedData,
+    GridLocator,
     GridsearchResult,
     GridsearchResultDetails,
     SavedGridPoint,
-    GridLocator
-    # SavedData,
 )
-from gen_experiments.gridsearch import (
-    find_gridpoints,
-    _amax_to_full_inds
-)
-from gen_experiments.config import plot_prefs
 from matplotlib.axes._axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec, SubplotSpec
 
 from ._typing import Float1D, Float2D
-from .data import TRIAL_DATA
+from .data import TRIAL_DATA, load_mitosis_5
 
 CMAP = mpl.color_sequences["tab10"]
 CTRUE = CMAP[0]
@@ -41,6 +36,12 @@ NamedMatch = tuple[str, SelectMatch]
 SelectStatement = tuple[tuple[SelectMatch, ...], tuple[SelectSome, ...]]
 NamedSelect = tuple[tuple[NamedMatch, ...], tuple[SelectSome, ...]]
 ExpKey = NewType("ExpKey", str)
+
+
+if hasattr(mitosis, "__version__"):
+    loadfunc = load_mitosis_5
+else:
+    loadfunc = mitosis.load_trial_data
 
 
 @dataclass
@@ -315,8 +316,7 @@ def plot_experiment_across_gridpoints(
         fig.suptitle("How do different smoothing compare on an ODE?")
     p_names = []
     ode_name, hexstr = experiment
-    results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
-    amax_arrays = _argmaxes_from_gsearch(cast(GridsearchResultDetails, results))
+    results = loadfunc(hexstr, trials_folder=TRIAL_DATA)
     parg_inds = {
         argind
         for argind, arg in enumerate(args)
@@ -327,11 +327,10 @@ def plot_experiment_across_gridpoints(
     indargs = [args[i] for i in indarg_inds]
     if not indargs:
         indargs = {...}
-    full_inds = _amax_to_full_inds(indargs, amax_arrays)
     for cell, (p_name, params) in zip(gs, pargs):
         locator = GridLocator(params_or=[params])
-        if matches:= find_gridpoints(locator, results["plot_data"], results):
-            if len(matches)>1:
+        if matches := find_gridpoints(locator, results["plot_data"], results):
+            if len(matches) > 1:
                 raise ValueError("More than one matches, unsure what to plot")
             p_names.append(p_name)
             for trajectory in results["plot_data"]:
@@ -382,14 +381,14 @@ def plot_point_across_experiments(
         fig.suptitle("How well does a smoothing method perform across ODEs?")
 
     for cell, (ode_name, hexstr) in zip(gs, exps):
-        results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
-        amax_arrays = _argmaxes_from_gsearch(cast(GridsearchResultDetails, results))
-        full_inds = _amax_to_full_inds((point,), amax_arrays)
+        results = cast(
+            GridsearchResultDetails, loadfunc(hexstr, trials_folder=TRIAL_DATA)
+        )
         locator = GridLocator(params_or=[params])
         if matches := find_gridpoints(locator, results["plot_data"], results):
-            if len(matches)>1:
+            if len(matches) > 1:
                 raise ValueError("More than one matches, unsure what to plot")
-            for trajectory in matches:  
+            for trajectory in matches:
                 ax = _plot_train_test_cell(
                     (fig, cell), trajectory, style=style, annotations=False
                 )
@@ -482,7 +481,7 @@ def plot_summary_metric(
     if title:
         fig.suptitle(title_1 + title_2 + title_3)
     for cell, (ode_name, hexstr) in zip(gs, args):
-        results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
+        results = loadfunc(hexstr, trials_folder=TRIAL_DATA)
         grid_axis_index = results["grid_params"].index(grid_axis_name)
         grid_axis = results["grid_vals"][grid_axis_index]
         metric_index = results["metrics"].index(metric)
