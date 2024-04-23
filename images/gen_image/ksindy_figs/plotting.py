@@ -559,6 +559,13 @@ def plot_summary_test_train(
     grid = fig.add_gridspec(n_rows + 1, 2, width_ratios=(1, 12 * n_cols))
     common_args = {"shape": (1, n_cols), "style": style, "annotations": False}
 
+    def label_row(row_name: str, fig: Figure, grid: GridSpec, n_row: int) -> None:
+        empty_ax = fig.add_subplot(grid[n_row + 1, 0])
+        empty_ax.axis("off")
+        empty_ax.text(
+            0, 0.5, row_name, va="center", transform=empty_ax.transAxes, rotation=90
+        )
+
     if row_cat == "exps":
         for n_row, (row_name, row_key) in enumerate(exps):
             common_args |= {"fig_cell": (fig, grid[n_row + 1, 1:])}
@@ -569,8 +576,10 @@ def plot_summary_test_train(
                 *params,
                 **common_args,
             )
+            label_row(row_name, fig, grid, n_row)
     else:
         for n_row, (row_name, row_key, series_key) in enumerate(params):
+            common_args |= {"fig_cell": (fig, grid[n_row + 1, 1:])}
             plot_point_across_experiments(
                 (row_name, cast(SelectMatch, row_key)),
                 metric,
@@ -579,12 +588,8 @@ def plot_summary_test_train(
                 series_key=series_key,
                 **common_args,
             )
+            label_row(row_name, fig, grid, n_row)
 
-        empty_ax = fig.add_subplot(grid[n_row + 1, 0])
-        empty_ax.axis("off")
-        empty_ax.text(
-            0, 0.5, row_name, va="center", transform=empty_ax.transAxes, rotation=90
-        )
     first_row = fig.get_axes()[:n_cols]
     for ax, col_name in zip(first_row, col_names):
         ax.set_title(col_name)

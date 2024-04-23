@@ -110,10 +110,11 @@ pass
 #     annotations=False,
 # )
 # %%
+from ksindy_figs.data import TRIAL_DATA, load_mitosis_5
 
+results = load_mitosis_5(exp_hexes["Cubic HO"], trials_folder=TRIAL_DATA)
 
-# results = mitosis.load_trial_data(exp_hexes["Cubic HO"], trials_folder=data.TRIAL_DATA)
-
+# %%
 # plots.plot_experiment_across_gridpoints(
 #     ("Cubic HO", exp_hexes["Cubic HO"]),
 #     ("Kalman", params_kalman),
@@ -133,9 +134,11 @@ pass
 # )
 
 # %%
-# from gen_experiments.odes import plot_ode_panel
+from gen_experiments.odes import plot_ode_panel
+from gen_experiments.gridsearch import find_gridpoints, GridLocator
 
-# single_result = strict_find_grid_match(results, params=params_kalman)
-# plot_ode_panel(cast(FullSINDyTrialData, single_result))
+where = GridLocator()
+single_result = find_gridpoints(results, params=params_kalman)
+plot_ode_panel(cast(FullSINDyTrialData, single_result))
 
 # %%
