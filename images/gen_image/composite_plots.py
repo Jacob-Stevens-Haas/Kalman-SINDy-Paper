@@ -1,10 +1,4 @@
 # %%
-from typing import cast
-
-import mitosis
-from gen_experiments.utils import FullSINDyTrialData
-
-import ksindy_figs.data as data
 import ksindy_figs.plotting as plots
 from ksindy_figs.plotting import ExpKey
 
@@ -63,9 +57,10 @@ plots.plot_summary_metric(
 )
 pass
 # %%
-
-noise_params = {"sim_params.t_end": 16, "sim_params.noise_rel": 0.1}
-params_kalman = noise_params | {"diff_params.kind": "kalman", "diff_params.alpha": lambda a: isinstance(a, float)}
+metric = "coeff_mse"
+plot_axes = [("sim_params.t_end", (4,))]
+noise_params = {"sim_params.t_end": 8, "sim_params.noise_rel": 0.1}
+params_kalman = noise_params | {"diff_params.kind": "kalman", "diff_params.alpha": lambda a: isinstance(a, float | int)}
 params_kalmanauto = noise_params | {"diff_params.kind": "kalman", "diff_params.alpha": lambda a: a is None}
 params_tv = noise_params | {"diff_params.kind": "trend_filtered"}
 params_savgol = noise_params | {"diff_params.diffcls": "SmoothedFiniteDifference"}
@@ -73,16 +68,30 @@ params_savgol = noise_params | {"diff_params.diffcls": "SmoothedFiniteDifference
 # %%
 fig = plots.plot_summary_test_train(
     [*exp_hexes.items()],
-    [("Kalman", params_kalman), ("KalmanAuto", params_kalmanauto), ("TV", params_tv), ("SavGol", params_savgol)],
+    [
+        ("Kalman", params_kalman, "Kalman"),
+        ("KalmanAuto", params_kalmanauto, "Auto Kalman"),
+        ("TV", params_tv, "Total Variation"),
+        ("SavGol", params_savgol, "Savitsky-Golay")
+    ],
     style="training",
+    metric=metric,
+    plot_axes=plot_axes,
     row_cat="params",   
 )
 pass
 # %%
 fig = plots.plot_summary_test_train(
     [*exp_hexes.items()],
-    [("Kalman", params_kalman), ("KalmanAuto", params_kalmanauto), ("TV", params_tv), ("SavGol", params_savgol)],
+    [
+        ("Kalman", params_kalman, "Kalman"),
+        ("KalmanAuto", params_kalmanauto, "Auto Kalman"),
+        ("TV", params_tv, "Total Variation"),
+        ("SavGol", params_savgol, "Savitsky-Golay")
+    ],
     style="test",
+    metric=metric,
+    plot_axes=plot_axes,
     row_cat="params",
 )
 pass
