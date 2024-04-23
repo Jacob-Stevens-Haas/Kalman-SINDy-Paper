@@ -2,7 +2,7 @@
 nohup mitosis gen_experiments.gridsearch \
     -e seed=19 \
     --debug \
-    -g none \
+    -e group=None \
     -F trials/debug \
     --param metrics=all \
     --param other_params=4nonzero-cubic \
@@ -13,9 +13,9 @@ nohup mitosis gen_experiments.gridsearch \
     --param +plot_prefs=absrel-newloc \
     --param +skinny_specs=duration-noise &> mock.log &
 
-nohup mitosis gen_experiments.gridsearch \
+nohup mitosis -m gen_experiments.gridsearch \
     -e seed=19 \
-    -g lorenz \
+    -e group=\"lorenz\" \
     -F trials \
     --param metrics=all \
     --param other_params=lor-ross-cubic \
@@ -26,9 +26,9 @@ nohup mitosis gen_experiments.gridsearch \
     --param +plot_prefs=absrel-newloc \
     --param +skinny_specs=duration-noise &> lorenz.log &
 
-nohup mitosis gen_experiments.gridsearch \
+nohup mitosis -m gen_experiments.gridsearch \
     -e seed=19 \
-    -g cubic_ho \
+    -e group=\"cubic_ho\" \
     -F trials \
     --param metrics=all \
     --param other_params=4nonzero-cubic \
@@ -39,9 +39,9 @@ nohup mitosis gen_experiments.gridsearch \
     --param +plot_prefs=absrel-newloc \
     --param +skinny_specs=duration-noise &> cubic_ho.log &
 
-nohup mitosis gen_experiments.gridsearch \
+nohup mitosis -m gen_experiments.gridsearch \
     -e seed=19 \
-    -g sho \
+    -e group=\"sho\" \
     -F trials \
     --param metrics=all \
     --param other_params=4nonzero-cubic \
@@ -52,9 +52,9 @@ nohup mitosis gen_experiments.gridsearch \
     --param +plot_prefs=absrel-newloc \
     --param +skinny_specs=duration-noise &> sho.log &
 
-nohup mitosis gen_experiments.gridsearch \
+nohup mitosis -m gen_experiments.gridsearch \
     -e seed=19 \
-    -g vdp \
+    -e group=\"vdp\" \
     -F trials \
     --param metrics=all \
     --param other_params=4nonzero-cubic \
@@ -65,9 +65,9 @@ nohup mitosis gen_experiments.gridsearch \
     --param +plot_prefs=absrel-newloc \
     --param +skinny_specs=duration-noise &> vdp.log &
 
-nohup mitosis gen_experiments.gridsearch \
+nohup mitosis -m gen_experiments.gridsearch \
     -e seed=19 \
-    -g lv \
+    -e group=\"lv\" \
     -F trials \
     --param metrics=all \
     --param other_params=4nonzero-cubic \
@@ -78,9 +78,9 @@ nohup mitosis gen_experiments.gridsearch \
     --param +plot_prefs=absrel-newloc \
     --param +skinny_specs=duration-noise &> lv.log &
 
-nohup mitosis gen_experiments.gridsearch \
+nohup mitosis -m gen_experiments.gridsearch \
     -e seed=19 \
-    -g duff \
+    -e group=\"duff\" \
     -F trials \
     --param metrics=all \
     --param other_params=4nonzero-cubic \
@@ -91,9 +91,9 @@ nohup mitosis gen_experiments.gridsearch \
     --param +plot_prefs=absrel-newloc \
     --param +skinny_specs=duration-noise &> duff.log &
 
-nohup mitosis gen_experiments.gridsearch \
+nohup mitosis -m gen_experiments.gridsearch \
     -e seed=19 \
-    -g hopf \
+    -e group=\"hopf\" \
     -F trials \
     --param metrics=all \
     --param other_params=hopf-cubic \
@@ -104,9 +104,9 @@ nohup mitosis gen_experiments.gridsearch \
     --param +plot_prefs=absrel-newloc \
     --param +skinny_specs=duration-noise &> hopf.log &
 
-nohup mitosis gen_experiments.gridsearch \
+nohup mitosis -m gen_experiments.gridsearch \
     -e seed=19 \
-    -g ross \
+    -e group=\"ross\" \
     -F trials \
     --param metrics=all \
     --param other_params=lor-ross-cubic \
