@@ -1,8 +1,8 @@
     # --param other_params=lor-ross-cubic \
-nohup mitosis gen_experiments.gridsearch \
+nohup mitosis -m gen_experiments.gridsearch \
     -e seed=19 \
     --debug \
-    -e group=None \
+    -e group=\"none\" \
     -F trials/debug \
     --param metrics=all \
     --param other_params=4nonzero-cubic \

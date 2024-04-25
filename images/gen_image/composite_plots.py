@@ -3,13 +3,14 @@ import ksindy_figs.plotting as plots
 from ksindy_figs.plotting import ExpKey
 
 exp_hexes = {
-    "Cubic HO": ExpKey("23526c"),
-    "Duffing": ExpKey("23de18"),
-    "Hopf": ExpKey("0b9747"),
-    "Lotka-Volterra": ExpKey("539481"),
-    "Rossler": ExpKey("7b9e27"),
-    "SHO": ExpKey("c5d866"),
-    "Van der Pol": ExpKey("48a935"),
+    "Cubic HO": ExpKey("c58ea9"),
+    "Duffing": ExpKey("866ee1"),
+    "Hopf": ExpKey("3316d2"),
+    "Lotka-Volterra": ExpKey("71892e"),
+    "Rossler": ExpKey("b5d7dd"),
+    "SHO": ExpKey("ee2836"),
+    "Van der Pol": ExpKey("6355c5"),
+    "Lorenz": ExpKey("6d651b")
 }
 
 # %%
@@ -134,11 +135,11 @@ results = load_mitosis_5(exp_hexes["Cubic HO"], trials_folder=TRIAL_DATA)
 # )
 
 # %%
-from gen_experiments.odes import plot_ode_panel
-from gen_experiments.gridsearch import find_gridpoints, GridLocator
+# from gen_experiments.odes import plot_ode_panel
+# from gen_experiments.gridsearch import find_gridpoints, GridLocator
 
-where = GridLocator()
-single_result = find_gridpoints(results, params=params_kalman)
-plot_ode_panel(cast(FullSINDyTrialData, single_result))
+# where = GridLocator()
+# single_result = find_gridpoints(results, params=params_kalman)
+# plot_ode_panel(cast(FullSINDyTrialData, single_result))
 
 # %%
