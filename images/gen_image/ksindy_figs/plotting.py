@@ -1,6 +1,7 @@
 from dataclasses import dataclass
+from pathlib import Path
 from types import EllipsisType as ellipsis
-from typing import Any, NewType, Optional, Sequence, cast
+from typing import Any, NewType, Optional, Sequence, Callable, cast
 from warnings import warn
 
 import gen_experiments.plotting as genplot
@@ -8,19 +9,20 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import mitosis
 import numpy as np
-from gen_experiments.utils import (
+from gen_experiments.gridsearch import find_gridpoints
+from gen_experiments.gridsearch.typing import (
+    KeepAxisSpec,
+    GridLocator,
     GridsearchResult,
     GridsearchResultDetails,
-    SavedData,
-    _amax_to_full_inds,
-    _grid_locator_match,
+    SavedGridPoint,
 )
 from matplotlib.axes._axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec, SubplotSpec
 
 from ._typing import Float1D, Float2D
-from .data import TRIAL_DATA
+from .data import TRIAL_DATA, load_mitosis_5
 
 CMAP = mpl.color_sequences["tab10"]
 CTRUE = CMAP[0]
@@ -36,6 +38,12 @@ NamedMatch = tuple[str, SelectMatch]
 SelectStatement = tuple[tuple[SelectMatch, ...], tuple[SelectSome, ...]]
 NamedSelect = tuple[tuple[NamedMatch, ...], tuple[SelectSome, ...]]
 ExpKey = NewType("ExpKey", str)
+
+
+if hasattr(mitosis, "__version__"):
+    loadfunc = load_mitosis_5
+else:
+    loadfunc = mitosis.load_trial_data
 
 
 @dataclass
@@ -259,10 +267,10 @@ def _setup_summary_fig(
     Args:
         cells_or_shape: number of grid elements to create, or a tuple of
             rows/cols
-        nest_parent: parent grid cell within which to to build a nested
+        fig_cell: parent grid cell within which to to build a nested
             gridspec
     Returns:
-        a figure and gridspec if nest_parent is not provided, otherwise,
+        a figure and gridspec if fig_cell is not provided, otherwise,
         None and a sub-gridspec
     """
     if isinstance(cells_or_shape, int):
@@ -282,7 +290,9 @@ def _setup_summary_fig(
 
 def plot_experiment_across_gridpoints(
     experiment: tuple[str, ExpKey],
-    *args: tuple[str, SelectMatch] | SelectSome,
+    metric: str,
+    plot_axes: KeepAxisSpec,
+    *args: tuple[str, SelectMatch, str | None],
     fig_cell: Optional[tuple[Figure, SubplotSpec]] = None,
     style: str,
     annotations: bool = True,
@@ -292,12 +302,12 @@ def plot_experiment_across_gridpoints(
 
     Arguments:
         hexstr: hexadecimal suffix for the experiment's result file.
-        args: From which gridpoints to load data, described either as:
-            - a local name and the parameters defining the gridpoint to match.
-            - ellipsis, indicating optima across all metrics across all plot
-                axes
-            - an indexing tuple indicating optima for that tuple's location in
-                the gridsearch argmax array
+        metric: The metric who's argopt defines the gridpoint index to match
+        plot_axes: Which gridsearch axes and indexes to match
+        args: From which gridpoints to load data, described as a local
+            name, the parameters for the trial, and the name of the series in
+            the trial to match
+
             Matching logic is AND(OR(parameter matches), OR(index matches))
         style: either "test" or "train"
         shape: Shape of the grid
@@ -310,44 +320,44 @@ def plot_experiment_across_gridpoints(
         fig.suptitle("How do different smoothing compare on an ODE?")
     p_names = []
     ode_name, hexstr = experiment
-    results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
-    amax_arrays = _argmaxes_from_gsearch(cast(GridsearchResultDetails, results))
-    parg_inds = {
-        argind
-        for argind, arg in enumerate(args)
-        if isinstance(arg, tuple) and isinstance(arg[0], str)
-    }
-    indarg_inds = set(range(len(args))) - parg_inds
-    pargs = [args[i] for i in parg_inds]
-    indargs = [args[i] for i in indarg_inds]
-    if not indargs:
-        indargs = {...}
-    full_inds = _amax_to_full_inds(indargs, amax_arrays)
-
-    for cell, (p_name, params) in zip(gs, pargs):
-        for trajectory in results["plot_data"]:
-            if _grid_locator_match(
-                trajectory["params"], trajectory["pind"], [params], full_inds
-            ):
-                p_names.append(p_name)
+    results = cast(GridsearchResultDetails, loadfunc(hexstr, trials_folder=TRIAL_DATA))
+    for cell, (p_name, params, series_key) in zip(gs, args):
+        if series_key:
+            series_data = [results["series_data"][series_key]]
+        else:
+            series_data = results["series_data"].values()
+        locator = GridLocator([metric], plot_axes, [params])
+        if matches := find_gridpoints(
+            locator,
+            results["plot_data"],
+            series_data,
+            results["metrics"],
+            results["scan_grid"]
+        ):
+            if len(matches) > 1:
+                raise ValueError("More than one matches, unsure what to plot")
+            p_names.append(p_name)
+            for trajectory in matches:
                 ax = _plot_train_test_cell(
                     (fig, cell), trajectory, style=style, annotations=False
                 )
                 if annotations:
                     ax.set_title(p_name)
                 break
-        else:
-            warn(f"Did not find a parameter match for {p_name} experiment")
+            else:
+                warn(f"Did not find a parameter match for {p_name} experiment")
     if annotations:
         ax.legend()
         fig.suptitle(f"ODE: {ode_name}")
-    return Figure, p_names
+    return fig, p_names
 
 
 def plot_point_across_experiments(
     named_params: NamedMatch,
-    point: SelectSome = ...,
+    metric: str,
+    plot_axes: KeepAxisSpec,
     *exps: tuple[str, ExpKey],
+    series_key: str | None = None,
     fig_cell: Optional[tuple[Figure, SubplotSpec]] = None,
     style: str,
     annotations: bool = True,
@@ -357,17 +367,15 @@ def plot_point_across_experiments(
 
     Arguments:
         params: name and parameters defining the gridpoint to match
-        point: gridpoint spec from the argmax array, defined as either an
-            - ellipsis, indicating optima across all metrics across all plot
-                axes
-            - indexing tuple indicating optima for that tuple's location in
-                the gridsearch argmax array
-        args (experiment_name, hexstr): From which experiments to load
+        metric: The metric who's argopt defines the gridpoint to match
+        exps (experiment_name, hexstr): From which experiments to load
             data, described as a local name and the hexadecimal suffix
             of the result file.
+        series_key: Which series' argopt arrays to use for matching.
+        fig_cell: Optionally, the figure and subplotspec area to add the plots.
         style: either "test" or "train"
-        shape: Shape of the grid
         annotations: whether to add labels or leave figure clean
+        shape: Shape of the grid
     Returns:
         Tuple of the plotted figure and names of each subplot
     """
@@ -377,13 +385,24 @@ def plot_point_across_experiments(
         fig.suptitle("How well does a smoothing method perform across ODEs?")
 
     for cell, (ode_name, hexstr) in zip(gs, exps):
-        results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
-        amax_arrays = _argmaxes_from_gsearch(cast(GridsearchResultDetails, results))
-        full_inds = _amax_to_full_inds((point,), amax_arrays)
-        for trajectory in results["plot_data"]:
-            if _grid_locator_match(
-                trajectory["params"], trajectory["pind"], [params], full_inds
-            ):
+        results = cast(
+            GridsearchResultDetails, loadfunc(hexstr, trials_folder=TRIAL_DATA)
+        )
+        if series_key:
+            series_data = [results["series_data"][series_key]]
+        else:
+            series_data = results["series_data"].values()
+        locator = GridLocator([metric], plot_axes, [params])
+        if matches := find_gridpoints(
+            locator,
+            results["plot_data"],
+            series_data,
+            results["metrics"],
+            results["scan_grid"]
+        ):
+            if len(matches) > 1:
+                raise ValueError("More than one matches, unsure what to plot")
+            for trajectory in matches:
                 ax = _plot_train_test_cell(
                     (fig, cell), trajectory, style=style, annotations=False
                 )
@@ -413,7 +432,7 @@ def _argmaxes_from_gsearch(
 
 def _plot_train_test_cell(
     fig_cell: tuple[Figure, SubplotSpec | int | tuple[int, int, int]],
-    trajectory: SavedData,
+    trajectory: SavedGridPoint,
     *,
     style: str,
     annotations: bool = False,
@@ -476,7 +495,9 @@ def plot_summary_metric(
     if title:
         fig.suptitle(title_1 + title_2 + title_3)
     for cell, (ode_name, hexstr) in zip(gs, args):
-        results = mitosis.load_trial_data(hexstr, trials_folder=TRIAL_DATA)
+        results = cast(
+            GridsearchResultDetails, loadfunc(hexstr, trials_folder=TRIAL_DATA)
+        )
         grid_axis_index = results["grid_params"].index(grid_axis_name)
         grid_axis = results["grid_vals"][grid_axis_index]
         metric_index = results["metrics"].index(metric)
@@ -500,8 +521,10 @@ def plot_summary_metric(
 
 def plot_summary_test_train(
     exps: Sequence[tuple[str, ExpKey]],
-    params: Sequence[tuple[str, SelectMatch]],
+    params: Sequence[tuple[str, SelectMatch, str | None]],
     style: str,
+    metric: str,
+    plot_axes: KeepAxisSpec,
     row_cat: Optional[str] = None,
 ) -> Figure:
     """Plot a comparison of different variants across experiments
@@ -509,10 +532,12 @@ def plot_summary_test_train(
     Args:
         exps: From which experiments to load data, described as a local name
             and the hexadecimal suffix of the result file.
-        params: which gridpoints to compare, described as a tuple of local name
-            and parameters to match.  If a parameters matches multiple grid
-            points, only one will be returned.
+        params: which gridpoints to compare, described as a tuple of local name,
+            parameters to match, and optionally a key to which series of
+            argopt arrays.  If params matches multiple grid
+            points for a single experiment, an error will be raised.
         style: "test" or "train"
+        metric: From which metric's argmax to load data.
         row_cat: row category, either "exps" or "params"
     """
     if row_cat is None:
@@ -520,39 +545,51 @@ def plot_summary_test_train(
     if row_cat == "exps":
         rows = exps
         cols = params
+        col_names = [name for name, _, _ in params]
     elif row_cat == "params":
         rows = params
         cols = exps
+        col_names = [name for name, _ in exps]
     else:
         raise ValueError("rows must be either 'exps' or 'params'")
     n_rows = len(rows)
     n_cols = len(cols)
-    col_names = [name for name, _ in cols]
     figsize = (0.5 + 3 * n_cols, 0.5 + 3 * n_rows)
     fig = plt.figure(figsize=figsize)
     grid = fig.add_gridspec(n_rows + 1, 2, width_ratios=(1, 12 * n_cols))
     common_args = {"shape": (1, n_cols), "style": style, "annotations": False}
-    for n_row, (row_name, row_key) in enumerate(rows):
-        common_args |= {"fig_cell": (fig, grid[n_row + 1, 1:])}
-        if row_cat == "exps":
-            plot_experiment_across_gridpoints(
-                (row_name, cast(ExpKey, row_key)),
-                *cast(Sequence[tuple[str, SelectMatch]], cols),
-                **common_args,
-            )
-        else:
-            plot_point_across_experiments(
-                (row_name, cast(SelectMatch, row_key)),
-                ...,
-                *cast(Sequence[tuple[str, ExpKey]], cols),
-                **common_args,
-            )
 
+    def label_row(row_name: str, fig: Figure, grid: GridSpec, n_row: int) -> None:
         empty_ax = fig.add_subplot(grid[n_row + 1, 0])
         empty_ax.axis("off")
         empty_ax.text(
             0, 0.5, row_name, va="center", transform=empty_ax.transAxes, rotation=90
         )
+
+    if row_cat == "exps":
+        for n_row, (row_name, row_key) in enumerate(exps):
+            common_args |= {"fig_cell": (fig, grid[n_row + 1, 1:])}
+            plot_experiment_across_gridpoints(
+                (row_name, cast(ExpKey, row_key)),
+                metric,
+                plot_axes,
+                *params,
+                **common_args,
+            )
+            label_row(row_name, fig, grid, n_row)
+    else:
+        for n_row, (row_name, row_key, series_key) in enumerate(params):
+            common_args |= {"fig_cell": (fig, grid[n_row + 1, 1:])}
+            plot_point_across_experiments(
+                (row_name, cast(SelectMatch, row_key)),
+                metric,
+                plot_axes,
+                *cast(Sequence[tuple[str, ExpKey]], cols),
+                series_key=series_key,
+                **common_args,
+            )
+            label_row(row_name, fig, grid, n_row)
+
     first_row = fig.get_axes()[:n_cols]
     for ax, col_name in zip(first_row, col_names):
         ax.set_title(col_name)
