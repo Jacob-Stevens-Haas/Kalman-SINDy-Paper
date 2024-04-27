@@ -1,6 +1,8 @@
 from pathlib import Path
 
 import numpy as np
+from gen_experiments.gridsearch import GridsearchResultDetails
+from mitosis import load_trial_data
 
 from ._typing import Float1D, Float2D, FloatOrArray
 
@@ -42,3 +44,15 @@ def gen_exp_data(
     x_dot = f_dot(x)
     z = x + rng.normal(size=x.shape, scale=np.sqrt(noise_var))
     return nt, t, x, x_dot, z
+
+
+def load_mitosis_5(
+    hexstr: str, trials_folder: str | Path = TRIAL_DATA
+) -> GridsearchResultDetails:
+    """Load results if mitosis 0.5 is installed
+
+    The mitosis 0.5 saves reusults as a list of results from each step.
+    This experiment is meant to just have one step, however.
+    """
+    results = load_trial_data(hexstr, trials_folder=trials_folder)
+    return results[0]
