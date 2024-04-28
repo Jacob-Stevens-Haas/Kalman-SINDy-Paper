@@ -85,8 +85,15 @@
    url = {https://github.com/MilesCranmer/symbolic\_},
    year = {2020},
 }
-
-
+@software{pysindy-experiments-2024,
+author = {Stevens-Haas, Jacob and Bhangale, Yash},
+license = {MIT},
+month = apr,
+title = {{pysindy-experiments}},
+url = {https://github.com/Jacob-Stevens-Haas/gen-experiments},
+version = {0.1.1},
+year = {2024}
+}
 @article{Long2019,
    author = {Zichao Long and Yiping Lu and Bin Dong},
    doi = {10.1016/j.jcp.2019.108925},
@@ -215,6 +222,13 @@
    title={Numerical differentiation of noisy data: A unifying multi-objective optimization framework},
    year={2020}
 }
+@article{cranmer2019learning,
+   author = {Miles D Cranmer and Rui Xu and Peter Battaglia and Shirley Ho},
+   journal = {33rd annual conference on Neural Information Processing Systems},
+   title = {Learning Symbolic Physics with Graph Networks},
+   url = {https://ml4physicalsciences.github.io/2019/files/NeurIPS\_ML4PS\_2019\_15.pdf},
+   year = {2019},
+}
 @book{Eaton2007,
    author = {Morris L. Eaton},
    doi = {10.1214/LNMS/1196285102},
@@ -226,13 +240,6 @@
    url = {https://projecteuclid.org/ebooks/institute-of-mathematical-statistics-lecture-notes-monograph-series/Multivariate-Statistics/toc/10.1214/lnms/1196285102},
    year = {2007},
    pages = {116,117},
-}
-@article{cranmer2019learning,
-   author = {Miles D Cranmer and Rui Xu and Peter Battaglia and Shirley Ho},
-   journal = {33rd annual conference on Neural Information Processing Systems},
-   title = {Learning Symbolic Physics with Graph Networks},
-   url = {https://ml4physicalsciences.github.io/2019/files/NeurIPS\_ML4PS\_2019\_15.pdf},
-   year = {2019},
 }
 @software{pysindy-experiments,
 author = {Stevens-Haas, Jacob and Bhangale, Yash},
@@ -452,7 +459,6 @@ year = {2024}
    year = {2021},
 }
 @article{Bertsimas2023,
-   abstract = {Discovering governing equations of complex dynamical systems directly from data is a central problem in scientific machine learning. In recent years, the sparse identification of nonlinear dynamics (SINDy) framework, powered by heuristic sparse regression methods, has become a dominant tool for learning parsimonious models. We propose an exact formulation of the SINDy problem using mixed-integer optimization (MIO-SINDy) to solve the sparsity constrained regression problem to provable optimality in seconds. On a large number of canonical ordinary and partial differential equations, we illustrate the dramatic improvement in our approach in accurate model discovery while being more sample efficient, robust to noise, and flexible in accommodating physical constraints.},
    author = {Dimitris Bertsimas and Wes Gurnee},
    doi = {10.1007/s11071-022-08178-9},
    issn = {1573269X},
@@ -479,7 +485,6 @@ year = {2024}
    year = {2022},
 }
 @misc{Gilpin2023,
-   abstract = {The striking fractal geometry of strange attractors underscores the generative nature of chaos: like probability distributions, chaotic systems can be repeatedly measured to produce arbitrarily-detailed information about the underlying attractor. Chaotic systems thus pose a unique challenge to modern statistical learning techniques, while retaining quantifiable mathematical properties that make them controllable and interpretable as benchmarks. Here, we present a growing database currently comprising 131 known chaotic dynamical systems spanning fields such as astrophysics , climatology, and biochemistry. Each system is paired with precomputed multivariate and univariate time series. Our dataset has comparable scale to existing static time series databases; however, our systems can be re-integrated to produce additional datasets of arbitrary length and granularity. Our dataset is annotated with known mathematical properties of each system, and we perform feature analysis to broadly categorize the diverse dynamics present across the collection. Chaotic systems inherently challenge forecasting models, and across extensive benchmarks we correlate forecasting performance with the degree of chaos present. We also exploit the unique generative properties of our dataset in several proof-of-concept experiments: surrogate transfer learning to improve time series classification, importance sampling to accelerate model training, and benchmarking symbolic regression algorithms.},
    author = {William Gilpin},
    institution = {35th Conference on Neural Information Processing Systems (NeurIPS 2021) Track on Datasets and Benchmarks},
    title = {Chaos as an interpretable benchmark for forecasting and data-driven modelling},
@@ -496,7 +501,6 @@ year = {2024}
       primaryClass={math.OC}
 }
 @article{Kaptanoglu2023weak,
-   abstract = {Sparse system identification is the data-driven process of obtaining parsimonious differential equations that describe the evolution of a dynamical system, balancing model complexity and accuracy. There has been rapid innovation in system identification across scientific domains, but there remains a gap in the literature for large-scale methodological comparisons that are evaluated on a variety of dynamical systems. In this work, we systematically benchmark sparse regression variants by utilizing the dysts standardized database of chaotic systems. In particular, we demonstrate how this open-source tool can be used to quantitatively compare different methods of system identification. To illustrate how this benchmark can be utilized, we perform a large comparison of four algorithms for solving the sparse identification of nonlinear dynamics (SINDy) optimization problem, finding strong performance of the original algorithm and a recent mixed-integer discrete algorithm. In all cases, we used ensembling to improve the noise robustness of SINDy and provide statistical comparisons. In addition, we show very compelling evidence that the weak SINDy formulation provides significant improvements over the traditional method, even on clean data. Lastly, we investigate how Pareto-optimal models generated from SINDy algorithms depend on the properties of the equations, finding that the performance shows no significant dependence on a set of dynamical properties that quantify the amount of chaos, scale separation, degree of nonlinearity, and the syntactic complexity.},
    author = {Alan A. Kaptanoglu and Lanyue Zhang and Zachary G. Nicolaou and Urban Fasel and Steven L. Brunton},
    doi = {10.1007/s11071-023-08525-4},
    issn = {1573269X},

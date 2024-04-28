@@ -561,10 +561,9 @@ def plot_summary_test_train(
 
     def label_row(row_name: str, fig: Figure, grid: GridSpec, n_row: int) -> None:
         empty_ax = fig.add_subplot(grid[n_row + 1, 0])
+        fontdict = {"fontsize": 25, "va": "center", "rotation": 90}
         empty_ax.axis("off")
-        empty_ax.text(
-            0, 0.5, row_name, va="center", transform=empty_ax.transAxes, rotation=90
-        )
+        empty_ax.text(0, 0.5, row_name, transform=empty_ax.transAxes, **fontdict)
 
     if row_cat == "exps":
         for n_row, (row_name, row_key) in enumerate(exps):
@@ -592,6 +591,6 @@ def plot_summary_test_train(
 
     first_row = fig.get_axes()[:n_cols]
     for ax, col_name in zip(first_row, col_names):
-        ax.set_title(col_name)
+        ax.set_title(col_name, fontsize=25)
     grid.tight_layout(fig)
     return fig

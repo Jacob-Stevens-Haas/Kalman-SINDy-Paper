@@ -1,13 +1,12 @@
 \documentclass{article}
-%\usepackage[letterpaper]{geometry}
 \usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
-
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{xcolor}
 \usepackage{natbib}
 \usepackage{graphicx}
+\usepackage{multirow}
 \usepackage{soul}
 
 \newcommand{\red}[1]{\textcolor{red}{#1}}
@@ -175,24 +174,21 @@ As the coefficient metrics are the most straightforwards, and we compare methods
 
 In a desire to make the experiments not just reproducible, but also customizable, extensible, and composable, we have separated the method, experiment, and experiment runner into separate packages.  Methodological improvements include adding Kalman smoothing and a entry point for hyperparameter optimization to the \gray{derivative} package, as well as an API for returning not just the derivatives, but the smoothed coordinates themselves (employed for Kalman and Total Variation).  It is used in \gray{pysindy}, where we enabled incorporating the smoothed coordinates into successive problem steps.  It should be noted that previous experiments using \gray{pysindy}'s derivative estimation would re-use the noisy coordinates in function library evaluation.  We also enabled a plugin for hyperparameter estimation, which is how this paper incorporates the package of \cite{Barratt2020}
 
-Within \gray{pysindy}, we redefined ensembling in a more flexible way to apply to a greater variety of underlying optimizers, such as the MIOSR one used in these experiments.  The standardization of interfaces allows us to compose SINDy experiments in the \cite{pysindy-experiments} package.  It allows a standard API to specify data generation, model building, and evaluation.  Beyond the experiments in this paper, we've added PDE experiments as well.  As a consequence, we were not able to compare with the integral-based methods of \cite{messenger2021bweak}, whose equivalent in \gray{pysindy} does not allow simulation, or \cite{Hirsh2022}, which has not been built into \gray{pysindy}.
+Within \gray{pysindy}, we redefined ensembling in a more flexible way to apply to a greater variety of underlying optimizers, such as the MIOSR one used in these experiments.  The standardization of interfaces allows us to compose SINDy experiments in the \cite{pysindy-experiments-2024} package.  It allows a standard API to specify data generation, model building, and evaluation.  Beyond the experiments in this paper, we've added PDE experiments as well.  As a consequence, we were not able to compare with the integral-based methods of \cite{messenger2021bweak}, whose equivalent in \gray{pysindy} does not allow simulation, or \cite{Hirsh2022}, which has not been built into \gray{pysindy}.
 
-Finally, in order to make it easier to collaborate and reproduce experiments, we expanded the \gray{mitosis} package developed in \cite{Stevens-Haas2022}.  This allows specifying experiment parameters and groups in a declarative manner, which leads to more readable diffs.  It also pins reproducibility information for any experiment run.  The command line syntax for the experiments in this paper, as well as the full environment git hashes and package versions, are in Appendix B
-
-\subsection{Results}
-
-We find that SINDy with Kalman smoothing recovers the problem structure in application much better than competing methods.  SINDy with Kalman hyperparameter optimization tends outperform the Savitsky-Golay and Total Variation gridsearched optima, itself outperformed only slightly by the Kalman gridsearched optima.  \green{(Add to existing plots, experiments ongoing)}  While hyperparameter optimization imposes a substantial runtime cost, it does not require access to the true data, making those results all the more inspiring for field use cases.  Simulations of discovered models across all ODEs and methods are shown in figure \ref{fig:test}
+Finally, in order to make it easier to collaborate and reproduce experiments, we expanded the \gray{mitosis} package developed in \cite{Stevens-Haas2022}.  This allows specifying experiment parameters and groups in a declarative manner, which leads to more readable diffs.  It also pins reproducibility information for any experiment run.  Further reproducibility info is in Appendix B
 \begin{figure}[h]
     \label{fig:test}
     \includegraphics[width=\textwidth]{images/summary_test}
     \caption{The simulation of discovered models compared to test data.  Kalman performs better for five of seven models, with the exceptions of Cubic HO and Lotka Voltera.  It represents the essential behavior of other ODEs better than TV and Savitsky-Golay.}
 \end{figure}
 
+\subsection{Results}
+
+We find that SINDy with Kalman smoothing recovers the problem structure in application much better than competing methods.  SINDy with Kalman hyperparameter optimization tends outperform the Savitsky-Golay and Total Variation gridsearched optima, itself outperformed only slightly by the Kalman gridsearched optima.  While hyperparameter optimization imposes a substantial runtime cost, it does not require access to the true data, making those results all the more inspiring for field use cases.  Simulations of discovered models across all ODEs and methods are shown in figure \ref{fig:test}
+
 Surprisingly, while models derived from Kalman-smoothed data outperform other methods in simulation, the Kalman-smoothed training data itself does not seem as accurate as data smoothed by L-1 Total Variation or Savitsky-Golay.
 
-\begin{figure}
-    \includegraphics[width=\textwidth]{images/summary_train}
-\end{figure}
 \begin{figure}
     \label{fig:train}
     \includegraphics[width=\textwidth]{images/summary_train}
@@ -203,14 +199,16 @@ Even more surprisingly, despite performing well in simulation, SINDy with Kalman
 
 \begin{figure}
     \label{fig:time}
-    \includegraphics[width=\textwidth]{images/summary_f1_time.png}
-    \includegraphics[width=\textwidth]{images/summary_mae_time.png}
+    \centering
+    \includegraphics[width=.65\textwidth]{images/summary_f1_time.png}\\
+    \includegraphics[width=.65\textwidth]{images/summary_mae_time.png}
     \caption{How well different smoothing methods in SINDy recover the ODE coefficients as data duration increases}
 \end{figure}
 \begin{figure}
     \label{fig:noise}
-    \includegraphics[width=\textwidth]{images/summary_f1_noise.png}
-    \includegraphics[width=\textwidth]{images/summary_mae_noise.png}
+    \centering
+    \includegraphics[width=.65\textwidth]{images/summary_f1_noise.png}\\
+    \includegraphics[width=.65\textwidth]{images/summary_mae_noise.png}
     \caption{How well different smoothing methods in SINDy recover the ODE coefficients as noise increases}
 \end{figure}
 
@@ -228,16 +226,23 @@ Kalman SINDy could also be more directly compared to Weak SINDy, which aims at t
 Finally, the interpretation of Kalman smoothing as the maximum likelihood estimator for Brownian motion suggests that it could inform the attempts at a stochastic SINDy, for which \cite{Callaham2021} and \cite{Boninsegna2018} have made the first steps.  Stochastic SINDy in those cases aimed for the use cases of noise arising from PDE discretization and inherently statistical mechanics, but the general formulation also has use in any randomly-forced system, such as building thermal controls or mapping a limited part of a chemical reaction network.
 
 \section*{Appendix}
-
 \begin{table}[ht]
     \centering
     \label{tab:ODEs}
-    \begin{tabular}{c c c}
-        System & ODE & Experiment parameters\\
+    \begin{tabular}{c c c c}
+        System & ODE & Experiment parameters & $x_0$ mean\\
         \hline\hline
         Linear Damped Oscillator
             & $\dot {\vec x} = \left[\begin{matrix}-\alpha & \beta \\ -\beta & -\alpha\end{matrix}\right] \vec x$
             & $\alpha = .1$, $\beta=2 $\\\\
+        Lorenz
+            & $\dot {\vec x} = \left[\begin{matrix}
+                \sigma (x_2 - x_1)\\
+                x_1(\rho - x_3) - x_2\\
+                x_1 x_2 - \beta x_3
+            \end{matrix}\right]$
+            & $\sigma=10$, $\rho=28$, $\beta=8/3$
+            & (0, 0, 15)\\\\
         Cubic Damped Oscillator
             & $\dot {\vec x} = \left[\begin{matrix}-\alpha & \beta \\ -\beta & -\alpha\end{matrix}\right] \left[\begin{matrix}x_1^3\\x_2^3\end{matrix}\right]$
             & $\alpha = .1$, $\beta=2 $\\\\
@@ -255,7 +260,8 @@ Finally, the interpretation of Kalman smoothing as the maximum likelihood estima
                 \alpha x_1 - \beta x_1 x_2 \\
                 \beta x_1  x_2 - 2 \alpha x_2
             \end{matrix}\right]$
-            & $\alpha = TBD$, $\beta=TBD $\\\\
+            & $\alpha = 5$, $\beta=1 $
+            & $(5, 5)$ \\\\
         Rossler
             & $\dot {\vec x} = \left[\begin{matrix}
                 -x_2 - x_3 \\
@@ -275,10 +281,36 @@ Finally, the interpretation of Kalman smoothing as the maximum likelihood estima
 
 \begin{table}
     \label{tab:exp-params}
-    \begin{tabular}{c c c}
-        Parameter & Symbol & value\\
+    \begin{tabular}{c c}
+        Parameter & Value\\
+        \hline \\
+        \multicolumn{2}{c}{\it Simulated Data} \\
+        Number of trajectories & 10\\
+        Initial Condition ($x_0$) variance & 9\\
+        Initial Condition ($x_0$) distribution & Normal*\\
+        Measurement error elative noise (default) & 10\% \\
+        Trajectory duration (default) & 16 \\
+        Measurement interval & 0.01\\
+        Random seed & 19 \\
+        \multicolumn{2}{c}{\it SINDy model} \\
+        Feature Library ($\Theta$) & Polynomials up to degree 3, including intercept \\
+        Optimizer & Mixed Integer Sparse Regression \\
+        L2 regularization (coefficitents) ($\alpha$) & 0.01 \\
+        target sparsity & (true value from equation) \\
+        Unbiasing & Yes \\
+        Feature normalization & No \\
+        Ensembling & data bagging \\
+        number of bags & 20 \\
+        \multicolumn{2}{c}{\it Experiment} \\
+        Trajectory duration (grid) & \\
+        Relative noise (grid) & \\
+        Measurement:Process variance (Kalman grid) & 1e-4, 1e-3, 1e-2, 1e-1, 1 \\
+        L1 regularization (derivative) (TV grid) & 1e-4, 1e-3, 1e-2, 1e-1, 1 \\
+        Window length (Savitsky-Golay grid) & 5, 8, 12, 15\\
         \hline
     \end{tabular}
+    \caption{Parametrization of data, SINDy models, and experiments conducted.\\
+    *Lotka-Volterra uses a gamma distribution, rather than normal, in order to enforce nonnegativity.}
 \end{table}
 
 
