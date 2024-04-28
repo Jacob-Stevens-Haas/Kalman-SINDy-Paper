@@ -1,5 +1,7 @@
 \documentclass{article}
-\usepackage[letterpaper]{geometry}
+\usepackage[
+    top=1in, bottom=1in, left=1in, right=1in
+]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -47,13 +49,6 @@ On the other hand, Kalman theory has a half-century history of assimilating nois
 Its noise properties have been well studied.
 The paper integrates mature, well-established Kalman theory with emerging SINDy technology and generalized cross validation parameter selection.
 It finds that the combination is competitive with other combinations of data smoothing and system identification, and has an advantage in preservation of problem structure and ease of parameter selection.
-
-% \begin{itemize}
-%     \item Model discovery in data science - bring power of kalman here (what about other methods: autoencoders, DMD, Koopman) (what for?) (All of physics specifying relationships among derivatives) (your job is to discovery derivatives, because derivatives give you the models. There's a lot more we can say, study, and understand about a system when we can identify relationships between derivatives.
-%     \item SINDy - overview (2016 + )
-%     \item Kalman overview (citing textbooks: Kalman is (a) Euler update, (b) Filter update with normal random variable, (c) MLE of Brownian motion, (d) best linear fit) engineering practice and design have used it for control, data assimilation is used as a workhorse tool in the real world e.g. weather.  Plus Auto KS  Include words from https://www.sciencedirect.com/science/article/pii/S0003267000838398 about comparison between SG and Kalman.  Include words from https://en.wikipedia.org/wiki/Local\_regression about comparison between SG and LOES.
-%     \item What we do: marriage of kalman + SINDy (figure, hinted at in P1)
-% \end{itemize}
 
 Model discovery methods are emerging as a critical component in data-driven engineering design and scientific discovery.
 Enabled by advancements in computational power, optimization schemes, and machine learning algorithms, such techniques are revolutionizing what can be achieved from sensor measurements deployed in a given system.
@@ -186,22 +181,19 @@ In a desire to make the experiments not just reproducible, but also customizable
 
 Within \gray{pysindy}, we redefined ensembling in a more flexible way to apply to a greater variety of underlying optimizers, such as the MIOSR one used in these experiments.  The standardization of interfaces allows us to compose SINDy experiments in the \cite{pysindy-experiments-2024} package.  It allows a standard API to specify data generation, model building, and evaluation.  Beyond the experiments in this paper, we've added PDE experiments as well.  As a consequence, we were not able to compare with the integral-based methods of \cite{messenger2021bweak}, whose equivalent in \gray{pysindy} does not allow simulation, or \cite{Hirsh2022}, which has not been built into \gray{pysindy}.
 
-Finally, in order to make it easier to collaborate and reproduce experiments, we expanded the \gray{mitosis} package developed in \cite{Stevens-Haas2022}.  This allows specifying experiment parameters and groups in a declarative manner, which leads to more readable diffs.  It also pins reproducibility information for any experiment run.  The command line syntax for the experiments in this paper, as well as the full environment git hashes and package versions, are in Appendix B
-
-\subsection{Results}
-
-We find that SINDy with Kalman smoothing recovers the problem structure in application much better than competing methods.  SINDy with Kalman hyperparameter optimization tends outperform the Savitsky-Golay and Total Variation gridsearched optima, itself outperformed only slightly by the Kalman gridsearched optima.  While hyperparameter optimization imposes a substantial runtime cost, it does not require access to the true data, making those results all the more inspiring for field use cases.  Simulations of discovered models across all ODEs and methods are shown in figure \ref{fig:test}
+Finally, in order to make it easier to collaborate and reproduce experiments, we expanded the \gray{mitosis} package developed in \cite{Stevens-Haas2022}.  This allows specifying experiment parameters and groups in a declarative manner, which leads to more readable diffs.  It also pins reproducibility information for any experiment run.  Further reproducibility info is in Appendix B
 \begin{figure}[h]
     \label{fig:test}
     \includegraphics[width=\textwidth]{images/summary_test}
     \caption{The simulation of discovered models compared to test data.  Kalman only performs worse on Cubic HO and Lotka Volterra.  It represents the essential behavior of other ODEs better than TV and Savitsky-Golay.}
 \end{figure}
 
+\subsection{Results}
+
+We find that SINDy with Kalman smoothing recovers the problem structure in application much better than competing methods.  SINDy with Kalman hyperparameter optimization tends outperform the Savitsky-Golay and Total Variation gridsearched optima, itself outperformed only slightly by the Kalman gridsearched optima.  While hyperparameter optimization imposes a substantial runtime cost, it does not require access to the true data, making those results all the more inspiring for field use cases.  Simulations of discovered models across all ODEs and methods are shown in figure \ref{fig:test}
+
 Surprisingly, while models derived from Kalman-smoothed data outperform other methods in simulation, the Kalman-smoothed training data itself does not seem as accurate as data smoothed by L-1 Total Variation or Savitsky-Golay.
 
-\begin{figure}
-    \includegraphics[width=\textwidth]{images/summary_train}
-\end{figure}
 \begin{figure}
     \label{fig:train}
     \includegraphics[width=\textwidth]{images/summary_train}
@@ -212,14 +204,16 @@ Even more surprisingly, despite performing well in simulation, SINDy with Kalman
 
 \begin{figure}
     \label{fig:time}
-    \includegraphics[width=\textwidth]{images/summary_f1_time.png}
-    \includegraphics[width=\textwidth]{images/summary_mae_time.png}
+    \centering
+    \includegraphics[width=.65\textwidth]{images/summary_f1_time.png}\\
+    \includegraphics[width=.65\textwidth]{images/summary_mae_time.png}
     \caption{How well different smoothing methods in SINDy recover the ODE coefficients as data duration increases}
 \end{figure}
 \begin{figure}
     \label{fig:noise}
-    \includegraphics[width=\textwidth]{images/summary_f1_noise.png}
-    \includegraphics[width=\textwidth]{images/summary_mae_noise.png}
+    \centering
+    \includegraphics[width=.65\textwidth]{images/summary_f1_noise.png}\\
+    \includegraphics[width=.65\textwidth]{images/summary_mae_noise.png}
     \caption{How well different smoothing methods in SINDy recover the ODE coefficients as noise increases}
 \end{figure}
 
