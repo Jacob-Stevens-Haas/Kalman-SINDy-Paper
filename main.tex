@@ -68,8 +68,8 @@ A diversity of methodological innovations have been introduced into the SINDy di
 This approach solves the sparse regression problem after integrating the data over random control volumes, providing a dramatic improvement to the noise robustness of the algorithm.
 Weak form optimization may be thought of as a generalization of the integral SINDy~\cite{Schaeffer2017} to PDE-FIND.
 Further improvements to noise robustness and limited data may be obtained through ensembling techniques~\cite{Fasel2022}, which use robust statistical bagging and are equivalent to Bayesian inference~\cite{gao2022bayesian,gao2023convergence}, to learn inclusion probabilities for the sparse terms $\xi$ from limited and noisy data.
-These methodological innovations are integrated in the open-source PySINDy software library~\cite{Kaptanoglu2022}, reducing the barrier to entry when applying these methods to new problems.  Additional techniques for learning dynamics from data include PDE-NET~\cite{Long2019,Long2018} and the Bayesian PDE discovery from data~\red{atkinson2020bayesian}.
-Symbolic learning has also been developed, including symbolic learning on graph neural networks~\red{cranmer2019learning,cranmer2020discovering,sanchez2020learning}.
+These methodological innovations are integrated in the open-source PySINDy software library~\cite{Kaptanoglu2022}, reducing the barrier to entry when applying these methods to new problems.  Additional techniques for learning dynamics from data include PDE-NET~\cite{Long2019,Long2018} and the Bayesian PDE discovery from data~\cite{atkinson2020bayesian}.
+Symbolic learning has also been developed, including symbolic learning on graph neural networks~\cite{cranmer2019learning,cranmer2020discovering,sanchez2020learning}.
 
 Kalman smoothing, which this paper adds to SINDy, has a long history of assimilating measurement data in time series.
 From its debut in~\cite{kalman, KalBuc}, engineering practice and design have used it for control and prediction across the real world, e.g. in radar systems, econometric variables, weather prediction, and more.
