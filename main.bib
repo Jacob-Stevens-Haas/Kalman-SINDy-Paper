@@ -10,6 +10,45 @@
   year={2016},
   publisher={SIAM}
 }
+
+@article{jonker2020efficient,
+  title={Efficient robust parameter identification in generalized kalman smoothing models},
+  author={Jonker, Jonathan and Zheng, Peng and Aravkin, Aleksandr Y},
+  journal={IEEE Transactions on Automatic Control},
+  volume={66},
+  number={10},
+  pages={4852--4857},
+  year={2020},
+  publisher={IEEE}
+}
+@article{aravkin2012robust,
+  title={Robust and Trend-following Kalman Smoothers using Student's t},
+  author={Aravkin, Aleksandr and Burke, James V and Pillonetto, Gianluigi},
+  journal={IFAC Proceedings Volumes},
+  volume={45},
+  number={16},
+  pages={1215--1220},
+  year={2012},
+  publisher={Elsevier}
+}
+@article{jonker2019fast,
+  title={Fast robust methods for singular state-space models},
+  author={Jonker, Jonathan and Aravkin, Aleksandr and Burke, James V and Pillonetto, Gianluigi and Webster, Sarah},
+  journal={Automatica},
+  volume={105},
+  pages={399--405},
+  year={2019},
+  publisher={Elsevier}
+}
+@article{zheng2018unified,
+  title={A unified framework for sparse relaxed regularized regression: SR3},
+  author={Zheng, Peng and Askham, Travis and Brunton, Steven L and Kutz, J Nathan and Aravkin, Aleksandr Y},
+  journal={IEEE Access},
+  volume={7},
+  pages={1404--1423},
+  year={2018},
+  publisher={IEEE}
+}
 @misc{ichinaga2024pydmd,
       title={PyDMD: A Python package for robust dynamic mode decomposition},
       author={Sara M. Ichinaga and Francesco Andreuzzi and Nicola Demo and Marco Tezzele and Karl Lapo and Gianluigi Rozza and Steven L. Brunton and J. Nathan Kutz},
@@ -39,10 +78,12 @@
   journal={arXiv preprint arXiv:2301.12649},
   year={2023}
 }
-@article{atkinson2020bayesian,
-   author = {Steven Atkinson and Waad Subber and Liping Wang and Genghis Khan and Philippe Hawi and Roger Ghanem},
-   title = {Data-driven discovery of free-form governing differential equations},
-   url = {https://www.arxiv.org/abs/1910.05117v2},
+@article{cranmer2020discovering,
+   author = {Miles Cranmer and Alvaro Sanchez-Gonzalez and Peter Battaglia and Rui Xu and Kyle Cranmer and David Spergel and Shirley Ho},
+   journal = { Advances in Neural Information Processing Systems 33},
+   title = {Discovering Symbolic Models from Deep Learning with Inductive Biases},
+   url = {https://github.com/MilesCranmer/symbolic\_},
+   year = {2020},
 }
 @software{pysindy-experiments-2024,
 author = {Stevens-Haas, Jacob and Bhangale, Yash},
@@ -141,6 +182,7 @@ year = {2024}
    url = {https://www.science.org},
    year = {2017},
 }
+
 @article{Boninsegna2018,
    author = {Lorenzo Boninsegna and Feliks Nüske and Cecilia Clementi},
    doi = {10.1063/1.5018409},
@@ -187,19 +229,6 @@ year = {2024}
    url = {https://ml4physicalsciences.github.io/2019/files/NeurIPS\_ML4PS\_2019\_15.pdf},
    year = {2019},
 }
-@article{cranmer2020discovering,
-   author = {Miles Cranmer and Alvaro Sanchez-Gonzalez and Peter Battaglia and Rui Xu and Kyle Cranmer and David Spergel and Shirley Ho},
-   journal = { Advances in Neural Information Processing Systems 33},
-   title = {Discovering Symbolic Models from Deep Learning with Inductive Biases},
-   url = {https://github.com/MilesCranmer/symbolic\_},
-   year = {2020},
-}
-@article{sanchez2020learning,
-   author = {Alvaro Sanchez-Gonzalez and Jonathan Godwin and Tobias Pfaff and Rex Ying and Jure Leskovec and Peter W Battaglia},
-   journal = {Proceedings of Machine Learning Research },
-   title = {Learning to Simulate Complex Physics with Graph Networks},
-   year = {2020},
-}
 @book{Eaton2007,
    author = {Morris L. Eaton},
    doi = {10.1214/LNMS/1196285102},
@@ -212,6 +241,65 @@ year = {2024}
    year = {2007},
    pages = {116,117},
 }
+@software{pysindy-experiments,
+author = {Stevens-Haas, Jacob and Bhangale, Yash},
+doi = {\red{tbd}},
+month = feb,
+title = {{Pysindy Experiments}},
+url = {https://github.com/Jacob-Stevens-Haas/gen\_experiments},
+version = {\red{tbd}},
+year = {2024}
+}
+
+@misc{atkinson2020bayesian,
+   author = {Steven Atkinson},
+   title = {Bayesian Hidden Physics Models: Uncertainty Quantification for Discovery of Nonlinear Partial Differential Operators from Data},
+   url = {https://arxiv.org/abs/2006.04228},
+   year = {2020},
+}
+@article{pysindy2020joss,
+   author = {Brian de Silva and Kathleen Champion and Markus Quade and Jean-Christophe Loiseau and J. Kutz and Steven Brunton},
+   doi = {10.21105/JOSS.02104},
+   issue = {49},
+   journal = {Journal of Open Source Software},
+   month = {5},
+   note = {chemical reaction dynamics (Hoffmann, Fröhner, & Noé, 2019),nonlinear optics (Sorokina,thermal fluids (Loiseau, 2019),plasma convection (Dam, Brøns, Juul Rasmussen, Naulin, & Hesthaven, 2017),numerical algorithms (Thaler, Paehler, & Adams, 2019),structural modeling (Lai & Nagarajaiah, 2019)physical constraints (Loiseau & Brunton, 2018)stochastic systems (Boninsegna, Nüske, & Clementi, 2018)},
+   pages = {2104},
+   publisher = {The Open Journal},
+   title = {PySINDy: A Python package for the sparse identification of nonlinear dynamical systems from data},
+   volume = {5},
+   year = {2020},
+}
+@article{pysindy2021joss,
+   author = {Alan Kaptanoglu and Brian de Silva and Urban Fasel and Kadierdan Kaheman and Andy Goldschmidt and Jared Callaham and Charles Delahunt and Zachary Nicolaou and Kathleen Champion and Jean-Christophe Loiseau and J. Kutz and Steven Brunton},
+   doi = {10.21105/JOSS.03994},
+   issue = {69},
+   journal = {Journal of Open Source Software},
+   month = {1},
+   note = {A summary of variants to SINDy as of late 2021. Addition of PDEs, ensembling, and a few optimizers (Trapping, FROLS, PI)},
+   pages = {3994},
+   publisher = {The Open Journal},
+   title = {PySINDy: A comprehensive Python package for robust sparse system identification},
+   volume = {7},
+   year = {2022},
+}
+
+@InProceedings{sanchez2020learning,
+  title = 	 {Learning to Simulate Complex Physics with Graph Networks},
+  author =       {Sanchez-Gonzalez, Alvaro and Godwin, Jonathan and Pfaff, Tobias and Ying, Rex and Leskovec, Jure and Battaglia, Peter},
+  booktitle = 	 {Proceedings of the 37th International Conference on Machine Learning},
+  pages = 	 {8459--8468},
+  year = 	 {2020},
+  editor = 	 {III, Hal Daumé and Singh, Aarti},
+  volume = 	 {119},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {13--18 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v119/sanchez-gonzalez20a/sanchez-gonzalez20a.pdf},
+  url = 	 {https://proceedings.mlr.press/v119/sanchez-gonzalez20a.html},
+}
+
+
 @article{Kaptanoglu2021,
    author = {Alan A Kaptanoglu and Jared L Callaham and Aleksandr Aravkin and Christopher J Hansen and Steven L Brunton},
    doi = {10.1103/PhysRevFluids.6.094401},
@@ -258,6 +346,14 @@ year = {2024}
    volume = {477},
    year = {2021},
 }
+
+@article{welch1995introduction,
+  title={An introduction to the Kalman filter},
+  author={Welch, Greg and Bishop, Gary and others},
+  year={1995},
+  publisher={Chapel Hill, NC, USA}
+}
+
 @article{aravkin2017generalized,
   title={Generalized Kalman smoothing: Modeling and algorithms},
   author={Aravkin, Aleksandr and Burke, James V and Ljung, Lennart and Lozano, Aurelie and Pillonetto, Gianluigi},
@@ -276,6 +372,17 @@ year = {2024}
    volume = {82},
    year = {1960}
 }
+@article{north2023review,
+  title={A Review of Data-Driven Discovery for Dynamic Systems},
+  author={North, Joshua S and Wikle, Christopher K and Schliep, Erin M},
+  journal={International Statistical Review},
+  volume={91},
+  number={3},
+  pages={464--492},
+  year={2023},
+  publisher={Wiley Online Library}
+}
+
 @article{KalBuc,
    author = {Kalman, R E and Bucy, R S},
    journal = {Trans. ASME J. Basic Eng},
