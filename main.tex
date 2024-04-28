@@ -8,6 +8,8 @@
 \usepackage{xcolor}
 \usepackage{natbib}
 \usepackage{graphicx}
+\usepackage{soul}
+
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
 \newcommand{\gray}[1]{\textcolor{gray}{#1}}
@@ -17,7 +19,7 @@
 \newcommand{\R}[1]{\mathbb{R}^{#1}}
 \bibliographystyle{unsrtnat}
 \title{Learning Nonlinear Dynamics Using Kalman Smoothing}
-\author{Jake Stevens-Haas$^*$, Yash Bhangale$^{\ddag}$, J. Nathan Kutz$^{*,\dag}$, Aleksander Aravkin$^*$\\
+\author{Jake Stevens-Haas$^*$, Yash Bhangale$^{\ddag}$, J. Nathan Kutz$^{*,\dag}$, Aleksandr Aravkin$^*$\\
 {\small $^*$Department of Applied Mathematics, University of Washington, Seattle, WA} \\
 {\small $^\ddag$Department of Mechanical Engineering, University of Washington, Seattle, WA} \\
 {\small $^\dag$ Department of Electrical and Computer Engineering, University of Washington, Seattle, WA} }
@@ -29,47 +31,47 @@
 
 \abstract{Identifying Ordinary Differential Equations (ODEs) from measurement data requires both fitting the dynamics and assimilating, either implicitly or explicitly, the measurement data.
 The {\em Sparse Identification of Nonlinear Dynamics} (SINDy) method involves a derivative estimation step (and optionally, smoothing) and a sparse regression on a library of candidate ODE terms.
-Kalman smoothing is a classical framework for assimilating the measurement data whose noise behavior is well understood.
+Kalman smoothing is a classical framework for assimilating the measurement data with known noise statistics.
 Previously, derivatives in SINDy and its python package, pysindy, had been estimated by finite difference, L1 total variation minimization, or local filters like Savitsky-Golay.
 In contrast, Kalman discovers ODEs that best recreate the essential dynamics in simulation, even when it does not perform as well at recovering coefficients, as measured by their F1 score and mean absolute error.  And 
 when combined with hyper-parameter optimization, requires the least amount of tuning.
 We have incorporated Kalman smoothing into the existing pysindy architecture, allowing for rapid adoption of the method.
-Kalman smoothing appears to be the most amenable to parameter selection and best at preserving problem structure in the presence of noise.
-This is demonstrated on a number of dynamical systems.}
+Numerical experiments on a number of dynamical systems show 
+Kalman smoothing to be the most amenable to parameter selection and best at preserving problem structure in the presence of noise.}
 
 \section{Introduction}
-The method of {\em Sparse Identification of Nonlinear Dynamics} (SINDy)~\cite{Brunton2016,brunton2022data} seeks to discover a differential or partial differential equation governing an arbitrary, temporally measured system.
-The method takes as input some coordinate measurements over time, such as angles between molecular bonds~\cite{Boninsegna2018} or a spatial field, such as wave heights~\cite{Rudy2017}, and returns the best ordinary or partial differential equation (ODE or PDE) from a library of candidate terms.
+The method of {\em Sparse Identification of Nonlinear Dynamics} (SINDy)~\citep{Brunton2016,brunton2022data} seeks to discover a differential or partial differential equation governing an arbitrary, temporally measured system.
+The method takes as input some coordinate measurements over time, such as angles between molecular bonds~\citep{Boninsegna2018} or a spatial field, such as wave heights~\citep{Rudy2017}, and returns the best ordinary or partial differential equation (ODE or PDE) from a library of candidate terms.
 However, the method struggles to accommodate significant measurement noise, which is typical of real-world systems.
-On the other hand, Kalman theory~\cite{kalman,KalBuc} has a half-century history of assimilating measurement noise to smooth a trajectory, with well-studied and rigorously characterized noise properties~\cite{welch1995introduction}.
+On the other hand, Kalman theory~\citep{kalman,KalBuc} has a half-century history of assimilating measurement noise to smooth a trajectory, with well-studied and rigorously characterized noise properties~\citep{welch1995introduction}.
 We integrate the mature and well-established theory of Kalman with the emerging SINDy technology and combine with generalized cross validation parameter selection for systematic practical applications.
 Our Kalman SINDy architecture is shown to be competitive with other combinations of data smoothing and system identification techniques, and has a significant advantage in preservation of problem structure and ease of parameter selection.
 
 Model discovery methods are emerging as a critical component in data-driven engineering design and scientific discovery.
 Enabled by advancements in computational power, optimization schemes, and machine learning algorithms, such techniques are revolutionizing what can be achieved from sensor measurements deployed in a given system.
-Of interest here is the discovery of dynamic models, which can be constructed from a diversity of techniques, including simple regression techniques such as the {\em dynamic mode decomposition} (DMD)~\cite{kutz2016dynamic,ichinaga2024pydmd} to neural networks such as {\em physics-informed neural networks} (PINNs)~\cite{Raissi2019}.
+Of interest here is the discovery of dynamic models, which can be constructed from a diversity of techniques, including simple regression techniques such as the {\em dynamic mode decomposition} (DMD)~\citep{kutz2016dynamic,ichinaga2024pydmd} to neural networks such as {\em physics-informed neural networks} (PINNs)~\citep{Raissi2019}.
 In such models, the objective is to construct a proxy model for the observed measurements which an be used to characterize and reconstruct solutions.
 While DMD provides an interpretable model in terms of a modal decomposition, most neural network architectures remain black-box without a clear view of the underlying dynamical processes.
-Although the number of techniques available are beyond the scope of this paper to review~\cite{cuomo2022scientific,north2023review}, SINDy is perhaps the leading data-driven model discovery method for interpretable and/or explainable dynamic models as it looks to infer the governing equations underlying the observed data.
+Although the number of techniques available are beyond the scope of this paper to review~\citep{cuomo2022scientific,north2023review}, SINDy is perhaps the leading data-driven model discovery method for interpretable and/or explainable dynamic models as it looks to infer the governing equations underlying the observed data.
 As such, it discovers relationships between spatial and/or temporal derivatives, which is the underlying mathematical representation of physics and engineering based systems since the time of Newton.
 
 The SINDy regression architecture seeks to robustly establish relationships between derivatives.
-Emerging from~\cite{Brunton2016,brunton2022data}, all variants aim to discover a sparse symbolic representation of an autonomous or controlled system, $\dot x = f(x)$.
-A diversity of methodological innovations have been introduced into the SINDy discovery framework to make it robust and stable, including the \emph{weak form} optimization by Messenger and Bortz~\cite{messenger2021bweak,messenger2021weak}.
+Emerging from~\citep{Brunton2016,brunton2022data}, all variants aim to discover a sparse symbolic representation of an autonomous or controlled system, $\dot x = f(x)$.
+A diversity of methodological innovations have been introduced into the SINDy discovery framework to make it robust and stable, including the \emph{weak form} optimization by Messenger and Bortz~\citep{messenger2021bweak,messenger2021weak}.
 This approach solves the sparse regression problem after integrating the data over random control volumes, providing a dramatic improvement to the noise robustness of the algorithm.
-Weak form optimization may be thought of as a generalization of the integral SINDy~\cite{Schaeffer2017} to PDE-FIND.
-Further improvements to noise robustness and limited data may be obtained through ensembling techniques~\cite{Fasel2022}, which use robust statistical bagging and are equivalent to Bayesian inference~\cite{gao2022bayesian,gao2023convergence}, to learn inclusion probabilities for the sparse terms $\xi$ from limited and noisy data.
-These methodological innovations are integrated in the open-source PySINDy software library~\cite{Kaptanoglu2022}, reducing the barrier to entry when applying these methods to new problems.  Additional techniques for learning dynamics from data include PDE-NET~\cite{Long2019,Long2018} and the Bayesian PDE discovery from data~\cite{atkinson2020bayesian}.
-Symbolic learning has also been developed, including symbolic learning on graph neural networks~\cite{cranmer2019learning,cranmer2020discovering,sanchez2020learning}.
+Weak form optimization may be thought of as a generalization of the integral SINDy~\citep{Schaeffer2017} to PDE-FIND.
+Further improvements to noise robustness and limited data may be obtained through ensembling techniques~\citep{Fasel2022}, which use robust statistical bagging and are equivalent to Bayesian inference~\citep{gao2022bayesian,gao2023convergence}, to learn inclusion probabilities for the sparse terms $\xi$ from limited and noisy data.
+These methodological innovations are integrated in the open-source PySINDy software library~\citep{Kaptanoglu2022}, reducing the barrier to entry when applying these methods to new problems.  Additional techniques for learning dynamics from data include PDE-NET~\citep{Long2019,Long2018} and the Bayesian PDE discovery from data~\citep{atkinson2020bayesian}.
+Symbolic learning has also been developed, including symbolic learning on graph neural networks~\citep{cranmer2019learning,cranmer2020discovering,sanchez2020learning}.
 
 Kalman smoothing, which this paper integrates with SINDy, has a long history of assimilating measurement data in time series.
 From its debut in~\cite{kalman, KalBuc}, engineering practice and design have used it for control and prediction across the real world, e.g. in radar systems, econometric variables, weather prediction, and more.
 The family of Kalman methods encompasses both smoothing, after-the-fact techniques, filtering, and real-time updates, that derive from the same assumptions for distributions.
 The Kalman smoother can be considered as a best-fit Euler update, the maximum likelihood estimator of Brownian motion, or as the best linear fit of an unknown system.
-The best fit/maximum likelihood view extends the classic Kalman updates to a rich family of efficient generalized Kalman smooth algorithms for signals corrupted by outliers, nonlinear models, constraints through side information, and a myriad of other applications~\cite{aravkin2017generalized}.
+The best fit/maximum likelihood view extends the classic Kalman updates to a rich family of efficient generalized Kalman smooth algorithms for signals corrupted by outliers, nonlinear models, constraints through side information, and a myriad of other applications, see~\cite{aravkin2017generalized,aravkin2012robust,jonker2019fast}.
 In the simplest invocation, the Kalman estimator is determined given only the ratio of measurement noise to the process's underlying stochastic noise.
 Fixing both of these parameters allows Kalman methods to also identify the variance of the associated estimator.
-Furthermore, much work exists to attempt to identify parameters purely from data, such as \cite{Barratt2020,VanBreugel2020}.
+Furthermore, a line of research aims to identify parameters purely from data, including \cite{Barratt2020,VanBreugel2020,jonker2020efficient}.
 These methods include their own parameters and are not guaranteed a solution, but are an improvement on the indeterminate nature of direct maximum likelihood or MAP likelihood.
 
 This paper introduces Kalman smoothing as the derivative estimation step in SINDy in distinction with the L1 total variation minimization or Savitsky-Golay smoothers common in application.
@@ -81,7 +83,7 @@ Section two describes the individual methods of SINDy and Kalman smoothing, prov
 \section{Background}
 
 \subsection{SINDy}
-SINDy \cite{Brunton2016} is a family of emerging methods for discovering the underlying dynamics of a system governed by unknown or partially-known \cite{Champion2020} differential equations.  It can handle ODEs as well as PDEs \cite{Rudy2017}, and has been used for protein folding \cite{Boninsegna2018}, chemical reaction networks \cite{Hoffmann2019}, plasma physics \cite{Guan2021}, and more.  Most invocations occur through the pysindy Python package, but innovations such as Langevin Regression \cite{Callaham2021} or \cite{Rudy2019} exist as independent code.
+SINDy \citep{Brunton2016} is a family of emerging methods for discovering the underlying dynamics of a system governed by unknown or partially-known \citep{Champion2020} differential equations.  It can handle ODEs as well as PDEs~\citep{Rudy2017}, and has been used for protein folding~\citep{Boninsegna2018}, chemical reaction networks~\citep{Hoffmann2019}, plasma physics~\citep{Guan2021}, and more.  Most invocations occur through the pysindy Python package, but innovations such as Langevin Regression~\cite{Callaham2021} or \cite{Rudy2019} exist as independent code.
 
 \begin{figure}[ht]
     \label{fig:sindy}
@@ -106,17 +108,17 @@ where
 \end{align*}
 The function library written as a time-independent quantity refers to the collection $\mat \Theta = [\theta_1, \dots \theta_p]^T$, where $\theta_i: \R{n}\rightarrow\R{}$. Examples include the family of all degree-2 polynomials of $n$ inputs, mixed sines and cosines of certain frequencies, or any user-specified family.
 
-The method generally proceeds in two steps:
+\hl{The method generally proceeds in two steps:}
 
 \begin{enumerate}
     \item Estimate the time derivatives of the system ${\mat{\widehat{\dot X}}} = G(\mat X)$ for some smoothing function $G$
     \item Choosing a sparse regression method, solve the problem $\underset{\text{sparse } \mat \Xi}{\arg\min} \left\| \mat{\widehat{\dot{X}}} - \mat \Xi \mat \Theta(\mat X) \right\|^2$
 \end{enumerate}
-This general process is sketched out in Figure \ref{fig:sindy}.  Researchers have tried a few different methods for calculating the derivatives, broadly grouped into  global methods (e.g. L-1 total variation minimization of \cite{Chartrand2011}) and local methods (e.g. Savitsky-Golay smoothing).  Different ways of applying sparsity has attracted more attention, including sequentially thresholding linear regression, a direct L-0 penalty \cite{Champion2020}, an L-0 constraint \cite{Bertsimas2023}, and Bayesian methods for a prior distribution such as spike-slab or regularized horseshoe priors \cite{Hirsh2022,gao2022bayesian}.  The latter two papers also demonstrate an interesting line of innovation, eschewing derivatives and using the integral of function library in the loss term.  A related approach instead uses the weak form of the differential equation, yielding a solution that {\it is} convex, but which does not provide as straightforward an interpretation of the measurement noise. Most of these methods can benefit from ensembling the data and library terms, as in \cite{Fasel2022}, but others, such as \cite{Kaptanoglu2021} for identifying Galerkin modes of globally stable fluid flows, require a specific form of function library.
+This general process is sketched out in Figure \ref{fig:sindy}.  Researchers have tried a few different methods for calculating the derivatives, broadly grouped into  global methods (e.g. L-1 total variation minimization of \cite{Chartrand2011}) and local methods (e.g. Savitsky-Golay smoothing).  Different ways of applying sparsity has attracted more attention, including sequentially thresholding linear regression, nonconvex penalties such as L0 with a relaxation-based minimization method \citep{zheng2018unified,Champion2020}, an L-0 constraint \citep{Bertsimas2023}, and Bayesian methods for a prior distribution such as spike-slab or regularized horseshoe priors \citep{Hirsh2022,gao2022bayesian}.  The latter two papers also demonstrate an interesting line of innovation, eschewing derivatives and using the integral of function library in the loss term.  A related approach instead uses the weak form of the differential equation, yielding a solution that {\it is} convex, but which does not provide as straightforward an interpretation of the measurement noise. Most of these methods can benefit from ensembling the data and library terms, as in \cite{Fasel2022}, but others, such as \cite{Kaptanoglu2021} for identifying Galerkin modes of globally stable fluid flows, require a specific form of function library.
 
 % A trade-off SINDy faces is that while sparse regression techniques work better with orthogonal basis functions, ODE for most physical systems have terms that are not orthogonal, e.g. the Lorenz system.
 
-This paper seeks to make SINDy more resilient to noise by taking a data assimilation approach.  It instead presents the Kalman SINDy steps
+This paper seeks to make SINDy more resilient to noise by taking a data assimilation approach.  \hl{It instead presents the Kalman SINDy steps}
 \begin{enumerate}
     \item Estimate the state and time derivatives of the system ${\mat{\widehat{\dot X}}}, \mat{\widehat X} = G(\mat X)$ where $G$ applies Kalman smoothing
     \item Choosing a sparse regression method, solve the problem $\underset{\text{sparse } \mat \Xi}{\arg\min} \left\| \mat{\widehat{\dot{X}}} - \mat \Xi \mat \Theta(\mat {\widehat X}) \right\|^2$
