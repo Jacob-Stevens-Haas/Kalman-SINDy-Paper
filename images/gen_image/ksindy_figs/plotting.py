@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from pathlib import Path
 from types import EllipsisType as ellipsis
-from typing import Any, NewType, Optional, Sequence, Callable, cast
+from typing import Any, cast, Literal, NewType, Optional, Sequence
 from warnings import warn
 
 import gen_experiments.plotting as genplot
@@ -294,7 +293,7 @@ def plot_experiment_across_gridpoints(
     plot_axes: KeepAxisSpec,
     *args: tuple[str, SelectMatch, str | None],
     fig_cell: Optional[tuple[Figure, SubplotSpec]] = None,
-    style: str,
+    style: Literal["training"] | Literal["test"],
     annotations: bool = True,
     shape: Optional[tuple[int, int]] = None,
 ) -> tuple[Figure, Sequence[str]]:
@@ -359,7 +358,7 @@ def plot_point_across_experiments(
     *exps: tuple[str, ExpKey],
     series_key: str | None = None,
     fig_cell: Optional[tuple[Figure, SubplotSpec]] = None,
-    style: str,
+    style: Literal["training"] | Literal["test"],
     annotations: bool = True,
     shape: Optional[tuple[int, int]] = None,
 ) -> tuple[Figure, Sequence[str]]:
@@ -431,10 +430,10 @@ def _argmaxes_from_gsearch(
 
 
 def _plot_train_test_cell(
-    fig_cell: tuple[Figure, SubplotSpec | int | tuple[int, int, int]],
+    fig_cell: tuple[Figure, SubplotSpec | int],
     trajectory: SavedGridPoint,
     *,
-    style: str,
+    style: Literal["training"] | Literal["test"],
     annotations: bool = False,
 ) -> Axes:
     """Plot either the training or test data in a single cell"""
@@ -445,7 +444,7 @@ def _plot_train_test_cell(
     else:
         ax = fig.add_subplot(cell, projection="3d")
         plot_func = genplot._plot_test_sim_data_3d
-    if style.lower() == "training":
+    if style == "training":
         plot_func = genplot.plot_training_trajectory
         plot_location = ax
         data = (
@@ -453,13 +452,14 @@ def _plot_train_test_cell(
             trajectory["data"]["x_true"],
             trajectory["data"]["smooth_train"],
         )
-    elif style.lower() == "test":
+        plot_func(plot_location, *data, labels=annotations)
+    elif style == "test":
         plot_location = [ax, ax]
         data = (
             trajectory["data"]["x_test"],
             trajectory["data"]["x_sim"],
         )
-    plot_func(plot_location, *data, labels=annotations)
+        plot_func(plot_location, *data, labels=annotations)
     return ax
 
 
