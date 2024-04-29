@@ -313,14 +313,13 @@ def plot_experiment_across_gridpoints(
     Returns:
         Tuple of the plotted figure and names of each subplot
     """
-
     fig, gs = _setup_summary_fig(shape if shape else len(args), fig_cell=fig_cell)
     if fig_cell is not None and annotations:
         fig.suptitle("How do different smoothing compare on an ODE?")
     p_names = []
     ode_name, hexstr = experiment
     results = cast(GridsearchResultDetails, loadfunc(hexstr, trials_folder=TRIAL_DATA))
-    for cell, (p_name, params, series_key) in zip(gs, args):
+    for cell, (p_name, params, series_key) in zip(gs, args, strict=True):  # type: ignore
         if series_key:
             series_data = [results["series_data"][series_key]]
         else:
@@ -383,7 +382,7 @@ def plot_point_across_experiments(
     if fig_cell is not None and annotations:
         fig.suptitle("How well does a smoothing method perform across ODEs?")
 
-    for cell, (ode_name, hexstr) in zip(gs, exps):
+    for cell, (ode_name, hexstr) in zip(gs, exps, strict=True):  # type: ignore
         results = cast(
             GridsearchResultDetails, loadfunc(hexstr, trials_folder=TRIAL_DATA)
         )
@@ -494,7 +493,7 @@ def plot_summary_metric(
     title_3 = f" changes? ({metric_fname})"
     if title:
         fig.suptitle(title_1 + title_2 + title_3)
-    for cell, (ode_name, hexstr) in zip(gs, args):
+    for cell, (ode_name, hexstr) in zip(gs, args, strict=True):  # type: ignore
         results = cast(
             GridsearchResultDetails, loadfunc(hexstr, trials_folder=TRIAL_DATA)
         )
