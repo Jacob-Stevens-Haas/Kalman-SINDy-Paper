@@ -12,9 +12,9 @@ requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
     "matplotlib",
-    "kalman @ git+https://github.com/Jacob-Stevens-haas/kalman",
-    "pysindy-experiments @ git+https://github.com/Jacob-Stevens-Haas/gen-experiments.git@0.1.0",
-    "mitosis>=0.4",
+    "kalman @ git+https://github.com/Jacob-Stevens-haas/kalman@0.1.1",
+    "pysindy-experiments @ git+https://github.com/Jacob-Stevens-Haas/gen-experiments.git@0fe7f40",
+    "mitosis>=0.5.3",
 ]
 
 [tool.setuptools]
@@ -22,3 +22,6 @@ packages = ["ksindy_figs"]
 
 [tool.isort]
 profile = "black"
+
+[tool.mitosis.steps]
+gridsearch = ["gen_experiments.gridsearch:run", "ksindy_figs.config:lu"]
