@@ -3,14 +3,14 @@ import ksindy_figs.plotting as plots
 from ksindy_figs.plotting import ExpKey
 
 exp_hexes = {
-    "Cubic HO": ExpKey("c58ea9"),
-    "Duffing": ExpKey("866ee1"),
-    "Hopf": ExpKey("3316d2"),
-    "Lotka-Volterra": ExpKey("71892e"),
-    "Rossler": ExpKey("b5d7dd"),
-    "SHO": ExpKey("ee2836"),
-    "Van der Pol": ExpKey("6355c5"),
-    "Lorenz": ExpKey("6d651b")
+    "Cubic HO": ExpKey("901103"),
+    "Duffing": ExpKey("0ed95a"),
+    "Hopf": ExpKey("06759e"),
+    "Lotka-Volterra": ExpKey("76a230"),
+    "Rossler": ExpKey("01b99b"),
+    "SHO": ExpKey("3c7c58"),
+    "Van der Pol": ExpKey("7e4acc"),
+    "Lorenz": ExpKey("76e1c9"),
 }
 
 # %%
@@ -62,7 +62,7 @@ metric = "coeff_mse"
 plot_axes = [("sim_params.t_end", (4,))]
 noise_params = {"sim_params.t_end": 8, "sim_params.noise_rel": 0.1}
 params_kalman = noise_params | {"diff_params.kind": "kalman", "diff_params.alpha": lambda a: isinstance(a, float | int)}
-params_kalmanauto = noise_params | {"diff_params.kind": "kalman", "diff_params.alpha": lambda a: a is None}
+params_kalmanauto = noise_params | {"diff_params.kind": "kalman", "diff_params.alpha": "gcv"}
 params_tv = noise_params | {"diff_params.kind": "trend_filtered"}
 params_savgol = noise_params | {"diff_params.diffcls": "SmoothedFiniteDifference"}
 
@@ -97,14 +97,11 @@ fig = plots.plot_summary_test_train(
 )
 pass
 
-# %% [markdown]
+# %% extra debug
 
-# ### Additional code to demonstrate helper functions
-
-# %%
 # plots.plot_point_across_experiments(
-#     ("Kalman", params_kalman),
-#     ...,
+#     ("KalmanAuto", params_kalmanauto),
+#     metric,
 #     *exp_hexes.items(),
 #     style="test",
 #     shape=(1, 7),

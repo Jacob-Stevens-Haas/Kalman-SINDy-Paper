@@ -79,7 +79,7 @@ plot_prefs = {
             ["coeff_mse", "coeff_f1"],
             (..., (2, 3, 4)),
             (
-                {"diff_params.kind": "kalman", "diff_params.alpha": None},
+                {"diff_params.kind": "kalman", "diff_params.alpha": "gcv"},
                 {
                     "diff_params.kind": "kalman",
                     "diff_params.alpha": lambda a: isinstance(a, float | int),

@@ -493,7 +493,7 @@ def plot_summary_metric(
     title_3 = f" changes? ({metric_fname})"
     if title:
         fig.suptitle(title_1 + title_2 + title_3)
-    for cell, (ode_name, hexstr) in zip(gs, args, strict=True):  # type: ignore
+    for cell, (ode_name, hexstr) in zip(gs, args):  # type: ignore
         results = cast(
             GridsearchResultDetails, loadfunc(hexstr, trials_folder=TRIAL_DATA)
         )
