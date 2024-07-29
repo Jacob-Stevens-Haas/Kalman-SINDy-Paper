@@ -3,14 +3,14 @@ import ksindy_figs.plotting as plots
 from ksindy_figs.plotting import ExpKey
 
 exp_hexes = {
-    "Cubic HO": ExpKey("901103"),
-    "Duffing": ExpKey("0ed95a"),
-    "Hopf": ExpKey("06759e"),
-    "Lotka-Volterra": ExpKey("76a230"),
-    "Rossler": ExpKey("01b99b"),
-    "SHO": ExpKey("3c7c58"),
-    "Van der Pol": ExpKey("7e4acc"),
-    "Lorenz": ExpKey("76e1c9"),
+    "Cubic HO": ExpKey("44e615"),
+    "Duffing": ExpKey("20c770"),
+    "Hopf": ExpKey("b77481"),
+    "Lotka-Volterra": ExpKey("9629a3"),
+    "Rossler": ExpKey("de0435"),
+    "SHO": ExpKey("4d95d1"),
+    "Van der Pol": ExpKey("7291d3"),
+    "Lorenz": ExpKey("268d27"),
 }
 
 # %%
