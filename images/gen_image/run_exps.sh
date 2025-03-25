@@ -1,4 +1,4 @@
-    # --param other_params=lor-ross-cubic \
+    # --param other_params=lor-ross-kernel \
 nohup mitosis gridsearch \
     --debug \
     --config images/gen_image/pyproject.toml \
@@ -6,13 +6,11 @@ nohup mitosis gridsearch \
     -e gridsearch.seed=19 \
     -e gridsearch.group=\"none\" \
     --param gridsearch.metrics=all \
-    --param gridsearch.other_params=4nonzero-cubic \
-    --param gridsearch.grid_params=rel_noise \
-    --param gridsearch.grid_vals=rel_noise \
-    --param gridsearch.grid_decisions=plot2 \
-    --param gridsearch.series_params=multikalman2 \
-    --param +gridsearch.plot_prefs=absrel-newloc \
-    --param +gridsearch.skinny_specs=duration-noise &> mock.log &
+    --param gridsearch.other_params=4nonzero-kernel \
+    --param gridsearch.grid_params=kernel_noise_scale \
+    --param gridsearch.grid_vals=small_even2 \
+    --param gridsearch.grid_decisions=noplot \
+    --param +gridsearch.plot_prefs=absrel-newloc  &> mock.log &
 
 nohup mitosis gridsearch \
     --config images/gen_image/pyproject.toml \
@@ -20,13 +18,11 @@ nohup mitosis gridsearch \
     -e gridsearch.seed=19 \
     -e gridsearch.group=\"lorenz\" \
     --param gridsearch.metrics=all \
-    --param gridsearch.other_params=lor-ross-cubic \
-    --param gridsearch.grid_params=rel_noise \
-    --param gridsearch.grid_vals=rel_noise \
-    --param gridsearch.grid_decisions=plot2 \
-    --param gridsearch.series_params=multikalman2 \
-    --param +gridsearch.plot_prefs=absrel-newloc \
-    --param +gridsearch.skinny_specs=duration-noise &> lorenz.log &
+    --param gridsearch.other_params=lor-ross-kernel \
+    --param gridsearch.grid_params=kernel_noise_scale \
+    --param gridsearch.grid_vals=small_even2 \
+    --param gridsearch.grid_decisions=noplot \
+    --param +gridsearch.plot_prefs=absrel-newloc  &> lorenz.log &
 
 nohup mitosis gridsearch \
     --config images/gen_image/pyproject.toml \
@@ -34,13 +30,11 @@ nohup mitosis gridsearch \
     -e gridsearch.seed=19 \
     -e gridsearch.group=\"cubic_ho\" \
     --param gridsearch.metrics=all \
-    --param gridsearch.other_params=4nonzero-cubic \
-    --param gridsearch.grid_params=rel_noise \
-    --param gridsearch.grid_vals=rel_noise \
-    --param gridsearch.grid_decisions=plot2 \
-    --param gridsearch.series_params=multikalman2 \
-    --param +gridsearch.plot_prefs=absrel-newloc \
-    --param +gridsearch.skinny_specs=duration-noise &> cubic_ho.log &
+    --param gridsearch.other_params=4nonzero-kernel \
+    --param gridsearch.grid_params=kernel_noise_scale \
+    --param gridsearch.grid_vals=small_even2 \
+    --param gridsearch.grid_decisions=noplot \
+    --param +gridsearch.plot_prefs=absrel-newloc  &> cubic_ho.log &
 
 nohup mitosis gridsearch \
     --config images/gen_image/pyproject.toml \
@@ -48,13 +42,11 @@ nohup mitosis gridsearch \
     -e gridsearch.seed=19 \
     -e gridsearch.group=\"sho\" \
     --param gridsearch.metrics=all \
-    --param gridsearch.other_params=4nonzero-cubic \
-    --param gridsearch.grid_params=rel_noise \
-    --param gridsearch.grid_vals=rel_noise \
-    --param gridsearch.grid_decisions=plot2 \
-    --param gridsearch.series_params=multikalman2 \
-    --param +gridsearch.plot_prefs=absrel-newloc \
-    --param +gridsearch.skinny_specs=duration-noise &> sho.log &
+    --param gridsearch.other_params=4nonzero-kernel \
+    --param gridsearch.grid_params=kernel_noise_scale \
+    --param gridsearch.grid_vals=small_even2 \
+    --param gridsearch.grid_decisions=noplot \
+    --param +gridsearch.plot_prefs=absrel-newloc  &> sho.log &
 
 nohup mitosis gridsearch \
     --config images/gen_image/pyproject.toml \
@@ -62,13 +54,11 @@ nohup mitosis gridsearch \
     -e gridsearch.seed=19 \
     -e gridsearch.group=\"vdp\" \
     --param gridsearch.metrics=all \
-    --param gridsearch.other_params=4nonzero-cubic \
-    --param gridsearch.grid_params=rel_noise \
-    --param gridsearch.grid_vals=rel_noise \
-    --param gridsearch.grid_decisions=plot2 \
-    --param gridsearch.series_params=multikalman2 \
-    --param +gridsearch.plot_prefs=absrel-newloc \
-    --param +gridsearch.skinny_specs=duration-noise &> vdp.log &
+    --param gridsearch.other_params=4nonzero-kernel \
+    --param gridsearch.grid_params=kernel_noise_scale \
+    --param gridsearch.grid_vals=small_even2 \
+    --param gridsearch.grid_decisions=noplot \
+    --param +gridsearch.plot_prefs=absrel-newloc  &> vdp.log &
 
 nohup mitosis gridsearch \
     --config images/gen_image/pyproject.toml \
@@ -76,13 +66,11 @@ nohup mitosis gridsearch \
     -e gridsearch.seed=19 \
     -e gridsearch.group=\"lv\" \
     --param gridsearch.metrics=all \
-    --param gridsearch.other_params=4nonzero-cubic \
-    --param gridsearch.grid_params=rel_noise \
-    --param gridsearch.grid_vals=rel_noise \
-    --param gridsearch.grid_decisions=plot2 \
-    --param gridsearch.series_params=multikalman2 \
-    --param +gridsearch.plot_prefs=absrel-newloc \
-    --param +gridsearch.skinny_specs=duration-noise &> lv.log &
+    --param gridsearch.other_params=4nonzero-kernel \
+    --param gridsearch.grid_params=kernel_noise_scale \
+    --param gridsearch.grid_vals=small_even2 \
+    --param gridsearch.grid_decisions=noplot \
+    --param +gridsearch.plot_prefs=absrel-newloc  &> lv.log &
 
 nohup mitosis gridsearch \
     --config images/gen_image/pyproject.toml \
@@ -90,13 +78,11 @@ nohup mitosis gridsearch \
     -e gridsearch.seed=19 \
     -e gridsearch.group=\"duff\" \
     --param gridsearch.metrics=all \
-    --param gridsearch.other_params=4nonzero-cubic \
-    --param gridsearch.grid_params=rel_noise \
-    --param gridsearch.grid_vals=rel_noise \
-    --param gridsearch.grid_decisions=plot2 \
-    --param gridsearch.series_params=multikalman2 \
-    --param +gridsearch.plot_prefs=absrel-newloc \
-    --param +gridsearch.skinny_specs=duration-noise &> duff.log &
+    --param gridsearch.other_params=4nonzero-kernel \
+    --param gridsearch.grid_params=kernel_noise_scale \
+    --param gridsearch.grid_vals=small_even2 \
+    --param gridsearch.grid_decisions=noplot \
+    --param +gridsearch.plot_prefs=absrel-newloc  &> duff.log &
 
 nohup mitosis gridsearch \
     --config images/gen_image/pyproject.toml \
@@ -104,13 +90,11 @@ nohup mitosis gridsearch \
     -e gridsearch.seed=19 \
     -e gridsearch.group=\"hopf\" \
     --param gridsearch.metrics=all \
-    --param gridsearch.other_params=hopf-cubic \
-    --param gridsearch.grid_params=rel_noise \
-    --param gridsearch.grid_vals=rel_noise \
-    --param gridsearch.grid_decisions=plot2 \
-    --param gridsearch.series_params=multikalman2 \
-    --param +gridsearch.plot_prefs=absrel-newloc \
-    --param +gridsearch.skinny_specs=duration-noise &> hopf.log &
+    --param gridsearch.other_params=hopf-kernel \
+    --param gridsearch.grid_params=kernel_noise_scale \
+    --param gridsearch.grid_vals=small_even2 \
+    --param gridsearch.grid_decisions=noplot \
+    --param +gridsearch.plot_prefs=absrel-newloc  &> hopf.log &
 
 nohup mitosis gridsearch \
     --config images/gen_image/pyproject.toml \
@@ -118,13 +102,11 @@ nohup mitosis gridsearch \
     -e gridsearch.seed=19 \
     -e gridsearch.group=\"ross\" \
     --param gridsearch.metrics=all \
-    --param gridsearch.other_params=lor-ross-cubic \
-    --param gridsearch.grid_params=rel_noise \
-    --param gridsearch.grid_vals=rel_noise \
-    --param gridsearch.grid_decisions=plot2 \
-    --param gridsearch.series_params=multikalman2 \
-    --param +gridsearch.plot_prefs=absrel-newloc \
-    --param +gridsearch.skinny_specs=duration-noise &> ross.log &
+    --param gridsearch.other_params=lor-ross-kernel \
+    --param gridsearch.grid_params=kernel_noise_scale \
+    --param gridsearch.grid_vals=small_even2 \
+    --param gridsearch.grid_decisions=noplot \
+    --param +gridsearch.plot_prefs=absrel-newloc  &> ross.log &
 
 # nohup mitosis gridsearch \
 #     -e seed=19 \
@@ -134,7 +116,7 @@ nohup mitosis gridsearch \
 #     --param other_params=debug \
 #     --param grid_params=duration-absnoise \
 #     --param grid_vals=debug \
-#     --param grid_decisions=plot2 \
+#     --param grid_decisions=noplot \
 #     --param +series_params=kalman-auto3 \
 #     --param +plot_prefs=test-absrel5 \
 #     &> ross.log &
