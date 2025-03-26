@@ -91,6 +91,7 @@ plot_prefs = {
     ),
 }
 sim_params = {
+    "debug": ND({"n_trajectories": 1, "dt":.1, "t_end": 1, "noise_abs": 0.0}),
     "test": ND({"n_trajectories": 2}),
     "test-r1": ND({"n_trajectories": 2, "noise_rel": 0.01}),
     "test-r2": ND({"n_trajectories": 2, "noise_rel": 0.1}),
@@ -130,7 +131,9 @@ feat_params = {
     "test": ND({"featcls": "Polynomial"}),
     "test2": ND({"featcls": "Fourier"}),
     "cubic": ND({"featcls": "Polynomial", "degree": 3}),
-    "testweak": ND({"featcls": "WeakPDELibrary"}),  # needs work
+    "quadratic": ND({"featcls": "Polynomial", "degree": 2}),
+    "quadratic-noconst": ND({"featcls": "Polynomial", "degree": 2, "include_bias": False}),
+    "testweak": ND({"featcls": "weak"}),  # needs work
     "pde2": ND({
         "featcls": "pde",
         "function_library": ps.PolynomialLibrary(degree=2, include_bias=False),
@@ -172,6 +175,8 @@ opt_params = {
         "n_models": 20,
     }),
     "mio-lorenz-ross": ND({"optcls": "MIOSR", "target_sparsity": 7, "unbias": True}),
+    "miosr-vdp-quad": ND({"optcls": "MIOSR", "target_sparsity": 3, "unbias": True}),
+    "miosr-vdp-cub": ND({"optcls": "MIOSR", "target_sparsity": 4, "unbias": True}),
 }
 
 # Grid search parameters
@@ -183,6 +188,12 @@ metrics = {
     "1": ["coeff_f1", "coeff_precision", "coeff_mse", "coeff_mae"],
 }
 other_params = {
+    "debug": ND({
+        "sim_params": sim_params["debug"],
+        "diff_params": diff_params["kernel-default"],
+        "feat_params": feat_params["test"],
+        "opt_params": opt_params["test"],
+    }),
     "test": ND({
         "sim_params": sim_params["test"],
         "diff_params": diff_params["test"],

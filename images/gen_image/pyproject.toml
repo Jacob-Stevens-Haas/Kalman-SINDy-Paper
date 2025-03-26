@@ -25,3 +25,6 @@ profile = "black"
 
 [tool.mitosis.steps]
 gridsearch = ["gen_experiments.gridsearch:run", "ksindy_figs.config:lu"]
+data = ["gen_experiments.data:gen_data", "ksindy_figs.config:lu"]
+odes = ["gen_experiments.odes:run", "ksindy_figs.config:lu"]
+ablate = ["gen_experiments.odes:ablate_feat", "ksindy_figs.config:lu"]
