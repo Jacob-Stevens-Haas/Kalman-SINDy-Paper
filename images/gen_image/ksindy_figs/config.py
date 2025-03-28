@@ -89,6 +89,11 @@ plot_prefs = {
             ),
         ),
     ),
+    "all-kernel": _PlotPrefs(
+        True,
+        False,
+        GridLocator(..., (..., ...), ({"diff_params.kind": "kernel"})),
+    ),
 }
 sim_params = {
     "debug": ND({"n_trajectories": 1, "dt":.1, "t_end": 1, "noise_abs": 0.0}),
