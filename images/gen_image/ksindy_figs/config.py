@@ -92,7 +92,7 @@ plot_prefs = {
     "all-kernel": _PlotPrefs(
         True,
         False,
-        GridLocator(..., (..., ...), ({"diff_params.kind": "kernel"})),
+        GridLocator(..., (..., ...), ({"diff_params.kind": "kernel"},)),
     ),
 }
 sim_params = {
