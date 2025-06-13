@@ -89,8 +89,14 @@ plot_prefs = {
             ),
         ),
     ),
+    "all-kernel": _PlotPrefs(
+        True,
+        False,
+        GridLocator(..., (..., ...), ({"diff_params.kind": "kernel"},)),
+    ),
 }
 sim_params = {
+    "debug": ND({"n_trajectories": 1, "dt":.1, "t_end": 1, "noise_abs": 0.0}),
     "test": ND({"n_trajectories": 2}),
     "test-r1": ND({"n_trajectories": 2, "noise_rel": 0.01}),
     "test-r2": ND({"n_trajectories": 2, "noise_rel": 0.1}),
@@ -98,6 +104,7 @@ sim_params = {
     "10x": ND({"n_trajectories": 10}),
     "10x-r1": ND({"n_trajectories": 10, "noise_rel": 0.01}),
     "10x-r2": ND({"n_trajectories": 10, "noise_rel": 0.05}),
+    "10x-plot-noise": ND({"n_trajectories": 10, "noise_rel": 0.1, "t_end": 8}),
     "test2": ND({"n_trajectories": 2, "noise_abs": 0.4}),
     "med-noise": ND({"n_trajectories": 2, "noise_abs": 0.8}),
     "med-noise-many": ND({"n_trajectories": 10, "noise_abs": 0.8}),
@@ -123,12 +130,15 @@ diff_params = {
     "kalman-auto": ND(
         {"diffcls": "sindy", "kind": "kalman", "alpha": None, "meas_var": 0.8}
     ),
+    "kernel-default": ND({"diffcls": "sindy", "kind":"kernel"}),
 }
 feat_params = {
     "test": ND({"featcls": "Polynomial"}),
     "test2": ND({"featcls": "Fourier"}),
     "cubic": ND({"featcls": "Polynomial", "degree": 3}),
-    "testweak": ND({"featcls": "WeakPDELibrary"}),  # needs work
+    "quadratic": ND({"featcls": "Polynomial", "degree": 2}),
+    "quadratic-noconst": ND({"featcls": "Polynomial", "degree": 2, "include_bias": False}),
+    "testweak": ND({"featcls": "weak"}),  # needs work
     "pde2": ND({
         "featcls": "pde",
         "function_library": ps.PolynomialLibrary(degree=2, include_bias=False),
@@ -170,6 +180,8 @@ opt_params = {
         "n_models": 20,
     }),
     "mio-lorenz-ross": ND({"optcls": "MIOSR", "target_sparsity": 7, "unbias": True}),
+    "miosr-vdp-quad": ND({"optcls": "MIOSR", "target_sparsity": 3, "unbias": True}),
+    "miosr-vdp-cub": ND({"optcls": "MIOSR", "target_sparsity": 4, "unbias": True}),
 }
 
 # Grid search parameters
@@ -181,6 +193,12 @@ metrics = {
     "1": ["coeff_f1", "coeff_precision", "coeff_mse", "coeff_mae"],
 }
 other_params = {
+    "debug": ND({
+        "sim_params": sim_params["debug"],
+        "diff_params": diff_params["kernel-default"],
+        "feat_params": feat_params["test"],
+        "opt_params": opt_params["test"],
+    }),
     "test": ND({
         "sim_params": sim_params["test"],
         "diff_params": diff_params["test"],
@@ -252,6 +270,12 @@ other_params = {
         "feat_params": feat_params["cubic"],
         "opt_params": opt_params["ensmio-lorenz-ross"],
     }),
+    "lor-ross-kernel": ND({
+        "diff_params": diff_params["kernel-default"],
+        "sim_params": sim_params["10x-plot-noise"],
+        "feat_params": feat_params["cubic"],
+        "opt_params": opt_params["ensmio-lorenz-ross"],
+    }),
     "lor-ross-cubic-fast": ND({
         "sim_params": sim_params["test"],
         "feat_params": feat_params["cubic"],
@@ -262,8 +286,20 @@ other_params = {
         "feat_params": feat_params["cubic"],
         "opt_params": opt_params["ensmio-ho-vdp-lv-duff"],
     }),
+    "4nonzero-kernel": ND({
+        "diff_params": diff_params["kernel-default"],
+        "sim_params": sim_params["10x-plot-noise"],
+        "feat_params": feat_params["cubic"],
+        "opt_params": opt_params["ensmio-ho-vdp-lv-duff"],
+    }),
     "hopf-cubic": ND({
         "sim_params": sim_params["10x"],
+        "feat_params": feat_params["cubic"],
+        "opt_params": opt_params["ensmio-hopf"],
+    }),
+    "hopf-kernel": ND({
+        "diff_params": diff_params["kernel-default"],
+        "sim_params": sim_params["10x-plot-noise"],
         "feat_params": feat_params["cubic"],
         "opt_params": opt_params["ensmio-hopf"],
     }),
@@ -276,6 +312,8 @@ grid_params = {
     "lorenzk": ["sim_params.t_end", "sim_params.noise_abs", "diff_params.alpha"],
     "duration-absnoise": ["sim_params.t_end", "sim_params.noise_abs"],
     "rel_noise": ["sim_params.t_end", "sim_params.noise_rel"],
+    "kernel_noise": ["diff_params.lmbd"],
+    "kernel_noise_scale": ["diff_params.lmbd", "diff_params.sigma"],
 }
 grid_vals: dict[str, list[Iterable]] = {
     "test": [[5, 10, 15, 20]],
@@ -284,6 +322,8 @@ grid_vals: dict[str, list[Iterable]] = {
     "abs_noise-kalman2": [[0.1, 0.5, 1, 2, 4, 8], [0.01, 0.25, 1, 4, 16, 64]],
     "tv1": [np.logspace(-4, 0, 5)],
     "tv2": [np.logspace(-3, -1, 5)],
+    "small_even": [np.logspace(-2, 2, 5)],
+    "small_even2": [np.logspace(-2, 2, 5), np.logspace(-2, 2, 5)],
     "lorenzk": [[1, 9, 27], [0.1, 0.8], np.logspace(-6, -1, 4)],
     "lorenz1": [[1, 3, 9, 27], [0.01, 0.1, 1]],
     "duration-absnoise": [[0.5, 1, 2, 4, 8, 16], [0.1, 0.5, 1, 2, 4, 8]],
@@ -294,6 +334,7 @@ grid_decisions = {
     "plot1": ["plot", "max"],
     "lorenzk": ["plot", "plot", "max"],
     "plot2": ["plot", "plot"],
+    "noplot": ["max", "max"],
 }
 diff_series: dict[str, SeriesDef] = {
     "kalman1": SeriesDef(
@@ -355,6 +396,18 @@ diff_series: dict[str, SeriesDef] = {
         diff_params["sfd-ps"],
         ["diff_params.smoother_kws.window_length"],
         [[5, 8, 12, 15]],
+    ),
+    "kernel-line": SeriesDef(
+        "Gaussian RBF vs noise",
+        diff_params["kernel-default"],
+        ["diff_params.lmbd"],
+        [[1e-2, 1e-1, 1e0, 1e1, 1e2]]
+    ),
+    "kernel-box": SeriesDef(
+        "Gaussian RBF, noise and scale",
+        diff_params["kernel-default"],
+        ["diff_params.lmbd", "diff_params.sigma"],
+        [[1e-2, 1e-1, 1e0, 1e1, 1e2], [1e-2, 1e-1, 1e0, 1e1, 1e2]]
     ),
 }
 series_params: dict[str, SeriesList] = {
@@ -431,6 +484,16 @@ series_params: dict[str, SeriesList] = {
             diff_series["tv2"],
             diff_series["sg2"],
         ],
+    ),
+    "kernel1": SeriesList(
+        "diff_params",
+        "Differentiation Method",
+        [diff_series["kernel-line"]]
+    ),
+    "kernel2": SeriesList(
+        "diff_params",
+        "Differentiation Method",
+        [diff_series["kernel-box"]]
     ),
 }
 
